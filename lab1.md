@@ -1,6 +1,6 @@
 # Лабораторная работа. Базовая настройка коммутатора
 ##  Топология
-! https://github.com/Rubbish-sorter/Main-Otus/blob/cff0a72fe03d2f55acfdb4d98dd189e44f30f7f0/lab1.png
+! [] (https://github.com/Rubbish-sorter/Main-Otus/blob/cff0a72fe03d2f55acfdb4d98dd189e44f30f7f0/lab1.png)
 ### Таблица адресации
 | Устройство  |  Интерфейс | IP-адрес/префикс  | 
 | ------------ | ------------ | ------------ |
