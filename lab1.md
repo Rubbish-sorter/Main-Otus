@@ -210,6 +210,7 @@ Directory of flash:/
 **Вопрос:**
 
 Какое имя присвоено образу Cisco IOS?
+
 **Ответ:** 2960-lanbasek9-mz.150-2.SE4.bin
 
 
