@@ -213,13 +213,115 @@ Directory of flash:/
 
 **Ответ:** 2960-lanbasek9-mz.150-2.SE4.bin
 
+### Часть 2. Настройка базовых параметров сетевых устройств
+Во второй части необходимо будет настроить основные параметры коммутатора и компьютера.
+#### Шаг 1. Настройте базовые параметры коммутатора.
+a.	В режиме глобальной конфигурации скопируйте следующие базовые параметры конфигурации и вставьте их в файл на коммутаторе S1. 
+no ip domain-lookup
+hostname S1
+service password-encryption
+enable secret class
+banner motd 
+Unauthorized access is strictly prohibited. 
+
+Switch#configure terminal
+
+Enter configuration commands, one per line.  End with CNTL/Z
+
+Switch(config)#no ip domain-lookup
+
+Switch(config)#hostname S1
+
+S1(config)#service password-encryption
+
+S1(config)#enable secret class
+
+S1(config)#banner motd # Unauthorized access is strictly prohibited. #
+
+b.	Назначьте IP-адрес интерфейсу SVI на коммутаторе. Благодаря этому вы получите возможность удаленного управления коммутатором.
+
+S1(config)#interface vlan 1
+	
+S1(config-if)#ip address 192.168.1.2 255.255.255.0
+
+S1(config-if)#ip default-gateway 192.168.1.1
+
+S1(config-if)# no shutdown
+
+S1(config-if)#
+
+%LINK-5-CHANGED: Interface Vlan1, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to up
+
+S1(config-if)#^Z
+
+S1#
+
+%SYS-5-CONFIG_I: Configured from console by console
+
+c.	Доступ через порт консоли также следует ограничить  с помощью пароля. Используйте cisco в качестве пароля для входа в консоль в этом задании. Конфигурация по умолчанию разрешает все консольные подключения без пароля. Чтобы консольные сообщения не прерывали выполнение команд, используйте параметр logging synchronous.
+
+S1(config)#line con 0
+
+S1(config-line)#logging synchronous
+
+S1(config-line)#password cisco
+
+S1(config-line)# login
+
+S1(config-line)#^Z
+
+S1#
+
+%SYS-5-CONFIG_I: Configured from console by console
+
+d.	Настройте каналы виртуального соединения для удаленного управления (vty), чтобы коммутатор разрешил доступ через Telnet. Если не настроить пароль VTY, будет невозможно подключиться к коммутатору по протоколу Telnet.
+Вопрос:
+Для чего нужна команда login?
+
+**Ответ:** для запроса пароля при входе.
+
+S1(config)#line vty 0 15
+
+S1(config-line)#password cisco
+
+S1(config-line)#login
+
+S1(config-line)#end
+
+S1#
+
+%SYS-5-CONFIG_I: Configured from console by console
+
+#### Шаг 2. Настройте IP-адрес на компьютере PC-A.
+Назначьте компьютеру IP-адрес и маску подсети в соответствии с таблицей адресации.
+
+C:\>ipconfig
+
+FastEthernet0 Connection:(default port)
+
+   Connection-specific DNS Suffix..: 
+   
+   Link-local IPv6 Address.........: FE80::260:3EFF:FE04:D0E5
+   
+   IPv6 Address....................: ::
+   
+   IPv4 Address....................: 192.168.1.10
+   
+   Subnet Mask.....................: 255.255.255.0
+   
+   Default Gateway.................: ::
+   
+                                     192.168.1.1
 
 
+S1#ping 192.168.1.10
 
-
-
-
-
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 192.168.1.10, timeout is 2 seconds:
+.!!!!
+Success rate is 80 percent (4/5), round-trip min/avg/max = 0/0/0 ms
 
 
 
