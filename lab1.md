@@ -319,9 +319,65 @@ FastEthernet0 Connection:(default port)
 S1#ping 192.168.1.10
 
 Type escape sequence to abort.
+
 Sending 5, 100-byte ICMP Echos to 192.168.1.10, timeout is 2 seconds:
+
 .!!!!
+
 Success rate is 80 percent (4/5), round-trip min/avg/max = 0/0/0 ms
+
+### Часть 3. Проверка сетевых подключений
+В третьей части лабораторной работы вам предстоит проверить и задокументировать конфигурацию коммутатора, протестировать сквозное соединение между компьютером PC-A и коммутатором S1, а также протестировать возможность удаленного управления коммутатором.
+#### Шаг 1. Отобразите конфигурацию коммутатора.
+
+S1#show running-config
+Building configuration...
+
+Current configuration : 1318 bytes
+!
+version 15.0
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+service password-encryption
+!
+hostname S1
+!
+enable secret 5 $1$mERr$9cTjUIEqNGurQiFU.ZeCi1
+!
+!
+!
+no ip domain-lookup
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+........
+!
+interface Vlan1
+ ip address 192.168.1.2 255.255.255.0
+!
+banner motd ^C Unauthorized access is strictly prohibited. ^C
+!
+!
+!
+line con 0
+ password 7 0822455D0A16
+ logging synchronous
+ login
+!
+line vty 0 4
+ password 7 0822455D0A16
+ login
+line vty 5 15
+ password 7 0822455D0A16
+ login
+!
+!
+!
+!
+end
 
 
 
