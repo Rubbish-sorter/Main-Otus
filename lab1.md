@@ -331,53 +331,227 @@ Success rate is 80 percent (4/5), round-trip min/avg/max = 0/0/0 ms
 #### Шаг 1. Отобразите конфигурацию коммутатора.
 
 S1#show running-config
+
 Building configuration...
 
 Current configuration : 1318 bytes
+
 !
+
 version 15.0
+
 no service timestamps log datetime msec
+
 no service timestamps debug datetime msec
+
 service password-encryption
+
 !
+
 hostname S1
+
 !
+
 enable secret 5 $1$mERr$9cTjUIEqNGurQiFU.ZeCi1
+
 !
+
 !
+
 !
+
 no ip domain-lookup
 !
+
 !
+
 !
+
 spanning-tree mode pvst
+
 spanning-tree extend system-id
+
 !
+
 ........
+
 !
+
 interface Vlan1
+
  ip address 192.168.1.2 255.255.255.0
+ 
 !
+
 banner motd ^C Unauthorized access is strictly prohibited. ^C
+
 !
+
 !
+
 !
+
 line con 0
+
  password 7 0822455D0A16
+ 
  logging synchronous
+ 
  login
+ 
 !
+
 line vty 0 4
+
  password 7 0822455D0A16
+ 
  login
+ 
 line vty 5 15
+
  password 7 0822455D0A16
+ 
  login
+ 
 !
+
 !
+
 !
+
 !
+
 end
 
+b.	Проверьте параметры VLAN 1.
 
+S1# show interface vlan 1 
+
+Vlan1 is up, line protocol is up
+
+  Hardware is CPU Interface, address is 0002.1732.8919 (bia 0002.1732.8919)
+  
+  Internet address is 192.168.1.2/24
+  
+  MTU 1500 bytes, BW 100000 Kbit, DLY 1000000 usec,
+     reliability 255/255, txload 1/255, rxload 1/255
+     
+  Encapsulation ARPA, loopback not set
+  
+  ARP type: ARPA, ARP Timeout 04:00:00
+
+.......
+**вопросы:**
+1) Какова полоса пропускания этого интерфейса?
+2) В каком состоянии находится VLAN 1?
+3) В каком состоянии находится канальный протокол?
+**Ответы:**
+1) 100МБит/сек
+2) активен поскольку был включен принудительно
+3) активен
+
+a.	В командной строке компьютера PC-A с помощью утилиты ping проверьте связь сначала с адресом PC-A.
+C:\> ping 192.168.1.10
+
+Reply from 192.168.1.10: bytes=32 time=2ms TTL=128
+
+Reply from 192.168.1.10: bytes=32 time=5ms TTL=128
+
+Reply from 192.168.1.10: bytes=32 time=5ms TTL=128
+
+Reply from 192.168.1.10: bytes=32 time<1ms TTL=128
+
+b.	Из командной строки компьютера PC-A отправьте эхо-запрос на административный адрес интерфейса SVI коммутатора S1.
+C:\> ping 192.168.1.2
+Reply from 192.168.1.2: bytes=32 time=4ms TTL=255
+
+Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+
+Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+
+Reply from 192.168.1.2: bytes=32 time<1ms TTL=255
+
+#### Шаг 3. Проверьте удаленное управление коммутатором S1.
+После этого используйте удаленный доступ к устройству с помощью Telnet. В этой лабораторной работе устройства PC-A и S1 расположены рядом. В производственной сети коммутатор может находиться в коммутационном шкафу на последнем этаже, в то время как административный компьютер находится на первом этаже. На данном этапе вам предстоит использовать Telnet для удаленного доступа к коммутатору S1 через его административный адрес SVI. Telnet — это не безопасный протокол, но вы можете использовать его для проверки удаленного доступа. В случае с Telnet вся информация, включая пароли и команды, отправляется через сеанс в незашифрованном виде. В последующих лабораторных работах вы будете использовать протокол SSH для удаленного доступа к сетевым устройствам.
+a.	Откройте Tera Term или другую программу эмуляции терминала с возможностью Telnet. 
+b.	Выберите сервер Telnet и укажите адрес управления SVI для подключения к S1.  Пароль: cisco.
+c.	После ввода пароля cisco вы окажетесь в командной строке пользовательского режима. Для перехода в исполнительский режим EXEC введите команду enable и используйте секретный пароль class.
+d.	Сохраните конфигурацию.
+e.	Чтобы завершить сеанс Telnet, введите exit.
+
+Trying 192.168.1.2 ...Open Unauthorized access is strictly prohibited. 
+
+User Access Verification
+
+Password: cisco
+
+S1>enable
+
+Password: class
+
+S1#
+
+S1#write memory
+
+Building configuration...
+
+[OK]
+
+S1# exit
+
+## Вопросы для повторения
+1.	Зачем необходимо настраивать пароль VTY для коммутатора?
+2.	Что нужно сделать, чтобы пароли не отправлялись в незашифрованном виде?
+**Ответы:**
+1. Для использования удалённого подключения, иначе это невозможно.
+2. Использовать зашифрованные пароли (secret) и сервис шифрования паролей, использовать SSH подключения.
+
+# Приложение А. Инициализация и перезагрузка коммутатора
+a.	Подключитесь к коммутатору с помощью консоли и войдите в привилегированный режим EXEC.
+b.	Воспользуйтесь командой show flash, чтобы определить, были ли созданы сети VLAN на коммутаторе.
+Press RETURN to get started!
+
+ Unauthorized access is strictly prohibited. 
+
+User Access Verification
+
+Password: cisco
+
+S1>enable
+
+Password: class
+
+S1#show flash
+
+Directory of flash:/
+
+1  -rw-     4670455          <no date>  2960-lanbasek9-mz.150-2.SE4.bin
+5  -rw-        1318          <no date>  config.text
+
+64016384 bytes total (59344611 bytes free)
+
+c.	Если во флеш-памяти обнаружен файл vlan.dat, удалите его.
+Нет, использовался Vlan 1.
+
+d.	Появится запрос о проверке имени файла. Если вы ввели имя правильно, нажмите клавишу Enter. В противном случае вы можете изменить имя файла.
+Будет предложено подтвердить удаление этого файла. Нажмите клавишу Enter для подтверждения.
+Не применимо.
+e.	Введите команду erase startup-config, чтобы удалить файл загрузочной конфигурации из NVRAM. Появится запрос об удалении конфигурационного файла. Нажмите клавишу Enter для подтверждения.
+S1#erase startup-config
+
+Erasing the nvram filesystem will remove all configuration files! Continue? [confirm]y[OK]
+
+Erase of nvram: complete
+
+%SYS-7-NV_BLOCK_INIT: Initialized the geometry of nvram
+
+f.	Перезагрузите коммутатор, чтобы удалить устаревшую информацию о конфигурации из памяти. Затем появится запрос на подтверждение перезагрузки коммутатора. Нажмите клавишу Enter, чтобы продолжить.
+
+S1#reload
+
+Proceed with reload? [confirm] y
+
+g.	После перезагрузки коммутатора появится запрос о входе в диалоговое окно начальной конфигурации. 
+
+Switch>
 
