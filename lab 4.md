@@ -18,7 +18,8 @@
 
 После подключения сети, инициализации и перезагрузки маршрутизатора и коммутатора выполните следующие действия:
 #### Шаг 1. Настройте маршрутизатор.
-Назначьте имя хоста и настройте основные параметры устройства.  
+Назначьте имя хоста и настройте основные параметры устройства. 
+
 Router>en  
 Router#conf t
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -27,6 +28,7 @@ R1(config)#no ip domain-lookup
 
 #### Шаг 2. Настройте коммутатор.
 Назначьте имя хоста и настройте основные параметры устройства.
+
 Switch>en  
 Switch#conf t  
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -46,6 +48,7 @@ S1(config)#no ip domain-lookup
 
 ### Часть 2. Ручная настройка IPv6-адресов    
 a.	Назначьте глобальные индивидуальные IPv6-адреса, указанные в таблице адресации обоим интерфейсам Ethernet на R1.  
+
 R1>en  
 R1#conf t    
 R1(config)#int g0/0/0   
@@ -70,6 +73,7 @@ R1#
 %SYS-5-CONFIG_I: Configured from console by console   
 
 b.	Введите команду show ipv6 interface brief, чтобы проверить, назначен ли каждому интерфейсу корректный индивидуальный IPv6-адрес.  
+
 R1#sh ipv6 int br  
 GigabitEthernet0/0/0       [up/up]  
     FE80::2E0:F9FF:FE71:5A01  
@@ -81,6 +85,7 @@ Vlan1                      [administratively down/down]
     unassigned  
     
 c.	Чтобы обеспечить соответствие локальных адресов канала индивидуальному адресу, вручную введите локальные адреса канала на каждом интерфейсе Ethernet на R1.  
+
 R1#   
 R1#conf t  
 Enter configuration commands, one per line.  End with CNTL/Z.  
@@ -93,6 +98,7 @@ R1#
 %SYS-5-CONFIG_I: Configured from console by console  
 
 d.	Используйте выбранную команду, чтобы убедиться, что локальный адрес связи изменен на fe80::1.    
+
 R1#sh ipv6 int brief  
 GigabitEthernet0/0/0       [up/up]  
     FE80::1  
@@ -109,6 +115,7 @@ Vlan1                      [administratively down/down]
  
 #### Шаг 2. Активируйте IPv6-маршрутизацию на R1.  
 a.	В командной строке на PC-B введите команду ipconfig, чтобы получить данные IPv6-адреса, назначенного интерфейсу ПК.  
+
 C:\>ipconfig  
 
 FastEthernet0 Connection:(default port)  
@@ -122,8 +129,11 @@ Default Gateway.................: ::
 0.0.0.0  
 **Вопрос:**
 Назначен ли индивидуальный IPv6-адрес сетевой интерфейсной карте (NIC) на PC-B?
+**Ответ:**
 Адресов нет поскольку не включена маршрутизация IPv6 и нет DHCP-сервера.
-b.	Активируйте IPv6-маршрутизацию на R1 с помощью команды IPv6 unicast-routing, чтобы убедиться, что новая многоадресная группа назначена интерфейсу G0/0/0. Обратите внимание, что в списке групп для интерфейса G0/0 отображается группа многоадресной рассылки всех маршрутизаторов (FF02::2).  
+
+b.	Активируйте IPv6-маршрутизацию на R1 с помощью команды IPv6 unicast-routing, чтобы убедиться, что новая многоадресная группа назначена интерфейсу G0/0/0. Обратите внимание, что в списке групп для интерфейса G0/0 отображается группа многоадресной рассылки всех маршрутизаторов (FF02::2).
+
 R1(config)#ipv6 unicast-routing
 R1(config)#do sh ipv6 int   
 GigabitEthernet0/0/0 is up, line protocol is up  
@@ -142,7 +152,8 @@ FF02::2 - все маршрутизаторы
 FF02::1:FF00:1 - назначенный адрес, установление соседства  
 FF02::1:FF71:5A01 - тоже самое, запрошенный адрес 
 
-c.	Теперь, когда R1 входит в группу многоадресной рассылки всех маршрутизаторов, еще раз введите команду ipconfig на PC-B. Проверьте данные IPv6-адреса.
+c.	Теперь, когда R1 входит в группу многоадресной рассылки всех маршрутизаторов, еще раз введите команду ipconfig на PC-B. Проверьте данные IPv6-адреса. 
+
 C:\>ipconfig  
 
 FastEthernet0 Connection:(default port)  
@@ -161,6 +172,7 @@ Default Gateway.................: FE80::1
 
 #### Шаг 3. Назначьте IPv6-адреса интерфейсу управления (SVI) на S1.
 a.	Назначьте адрес IPv6 для S1. Также назначьте этому интерфейсу локальный адрес канала.
+
 Switch>en
 Switch#conf t
 Enter configuration commands, one per line. End with CNTL/Z.
@@ -175,6 +187,7 @@ Switch(config-if)#
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to up
 
 b.	Проверьте правильность назначения IPv6-адресов интерфейсу управления с помощью команды show ipv6 interface vlan1.
+
 S1# sh ipv6 int  
 Vlan1 is up, line protocol is up  
   IPv6 is enabled, link-local address is FE80::  
@@ -184,7 +197,7 @@ Vlan1 is up, line protocol is up
   Joined group address(es):  
     FF02::1  
     FF02::1:FF00:0  
-    FF02::1:FF00:B    
+    FF02::1:FF00:B      
 #### Шаг 4. Назначьте компьютерам статические IPv6-адреса.  
 a.	Откройте окно Свойства Ethernet для каждого ПК и назначьте адресацию IPv6.  
 b.	Убедитесь, что оба компьютера имеют правильную информацию адреса IPv6. Каждый компьютер должен иметь два глобальных адреса IPv6: один статический и один SLACC  
