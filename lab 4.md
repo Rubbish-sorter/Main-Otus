@@ -189,7 +189,7 @@ Vlan1 is up, line protocol is up
 a.	Откройте окно Свойства Ethernet для каждого ПК и назначьте адресацию IPv6.  
 b.	Убедитесь, что оба компьютера имеют правильную информацию адреса IPv6. Каждый компьютер должен иметь два глобальных адреса IPv6: один статический и один SLACC  
 
-C:\>ipconfig  
+C:\>ipconfig     
 
 FastEthernet0 Connection:(default port)   
 
