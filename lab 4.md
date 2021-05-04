@@ -251,8 +251,8 @@ C:\>tracert 2001:db8:acad:a::3
 
 Tracing route to 2001:db8:acad:a::3 over a maximum of 30 hops: 
 
-  1   0 ms      0 ms      0 ms      2001:DB8:ACAD:1::1  
-  2   0 ms      0 ms      0 ms      2001:DB8:ACAD:A::3  
+  1   0 ms      0 ms      0 ms      2001:DB8:ACAD:1 ::1  
+  2   0 ms      0 ms      0 ms      2001:DB8:ACAD:A ::3  
 
 Trace complete.  
 
