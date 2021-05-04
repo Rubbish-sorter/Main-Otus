@@ -287,9 +287,9 @@ Approximate round trip times in milli-seconds:
     
 - С PC-B отправьте эхо-запрос на локальный адрес канала G0/0 на R1.
 
-C:\>ping 2001:db8:acad:a::1  
+C:\>ping 2001:db8:acad:a ::1  
 
-Pinging 2001:db8:acad:a::1 with 32 bytes of data:
+Pinging 2001:db8:acad:a ::1 with 32 bytes of data:
 
 Reply from 2001:DB8:ACAD: A::1: bytes=32 time<1ms TTL=255  
 Reply from 2001:DB8:ACAD: A::1: bytes=32 time<1ms TTL=255  
