@@ -17,11 +17,16 @@
 ### Часть 1. Настройка топологии и конфигурация основных параметров маршрутизатора и коммутатора
 
 После подключения сети, инициализации и перезагрузки маршрутизатора и коммутатора выполните следующие действия:
-Шаг 1. Настройте маршрутизатор.
-Назначьте имя хоста и настройте основные параметры устройства.
-Шаг 2. Настройте коммутатор.
-Назначьте имя хоста и настройте основные параметры устройства.
+#### Шаг 1. Настройте маршрутизатор.
+Назначьте имя хоста и настройте основные параметры устройства.  
+Router>en  
+Router#conf t
+Enter configuration commands, one per line. End with CNTL/Z.  
+Router(config)#hostname R1  
+R1(config)#no ip domain-lookup  
 
+#### Шаг 2. Настройте коммутатор.
+Назначьте имя хоста и настройте основные параметры устройства.
 Switch>en  
 Switch#conf t  
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -39,12 +44,6 @@ Enter configuration commands, one per line. End with CNTL/Z.
 Switch(config)#hostname S1    
 S1(config)#no ip domain-lookup  
 
-Router>en  
-Router#conf t
-Enter configuration commands, one per line. End with CNTL/Z.  
-Router(config)#hostname R1
-R1(config)#no ip domain-lookup  
-
 ### Часть 2. Ручная настройка IPv6-адресов    
 a.	Назначьте глобальные индивидуальные IPv6-адреса, указанные в таблице адресации обоим интерфейсам Ethernet на R1.  
 R1>en  
@@ -61,7 +60,6 @@ R1(config-if)#
 R1(config-if)#int g0/0/1    
 R1(config-if)#ipv6 addr 2001:db8:acad:1::1/64    
 R1(config-if)#no shut    
-
 R1(config-if)#  
 %LINK-5-CHANGED: Interface GigabitEthernet0/0/1, changed state to up  
 
@@ -70,6 +68,7 @@ R1(config-if)#
 R1(config-if)#^Z  
 R1#   
 %SYS-5-CONFIG_I: Configured from console by console   
+
 b.	Введите команду show ipv6 interface brief, чтобы проверить, назначен ли каждому интерфейсу корректный индивидуальный IPv6-адрес.  
 R1#sh ipv6 int br  
 GigabitEthernet0/0/0       [up/up]  
@@ -92,6 +91,7 @@ R1(config-if)#ipv6 addr fe80::1 link-local
 R1(config-if)#^Z  
 R1#  
 %SYS-5-CONFIG_I: Configured from console by console  
+
 d.	Используйте выбранную команду, чтобы убедиться, что локальный адрес связи изменен на fe80::1.    
 R1#sh ipv6 int brief  
 GigabitEthernet0/0/0       [up/up]  
@@ -102,10 +102,12 @@ GigabitEthernet0/0/1       [up/up]
     2001:DB8:ACAD:1::1  
 Vlan1                      [administratively down/down]  
     unassigned  
-Вопрос:  
+    
+**Вопрос:**  
 Какие группы многоадресной рассылки назначены интерфейсу G0/0?  
-       FF02::1:FF00:1 - назначенный адрес, установление соседства  
-    Шаг 2. Активируйте IPv6-маршрутизацию на R1.  
+ **Ответ:** FF02::1:FF00:1 - назначенный адрес, установление соседства  
+ 
+ Шаг 2. Активируйте IPv6-маршрутизацию на R1.  
 a.	В командной строке на PC-B введите команду ipconfig, чтобы получить данные IPv6-адреса, назначенного интерфейсу ПК.  
 C:\>ipconfig  
 
@@ -134,10 +136,12 @@ GigabitEthernet0/0/0 is up, line protocol is up
     FF02::2  
     FF02::1:FF00:1   
    ..........   
+**Разбор адресов:**
 FF02::1 - адрес широковещательной рассылки  
 FF02::2 - все маршрутизаторы
 FF02::1:FF00:1 - назначенный адрес, установление соседства  
-FF02::1:FF71:5A01 - тоже самое, запрошенный адрес  
+FF02::1:FF71:5A01 - тоже самое, запрошенный адрес 
+
 c.	Теперь, когда R1 входит в группу многоадресной рассылки всех маршрутизаторов, еще раз введите команду ipconfig на PC-B. Проверьте данные IPv6-адреса.
 C:\>ipconfig  
 
@@ -153,9 +157,9 @@ Default Gateway.................: FE80::1
 
 **Вопрос:**
 Почему PC-B получил глобальный префикс маршрутизации и идентификатор подсети, которые вы настроили на R1?
+**Ответ:** протокол SLAAС азначает адреса из той же подсети, что и адрес маршрутизатора.
 
-
-Шаг 3. Назначьте IPv6-адреса интерфейсу управления (SVI) на S1.
+#### Шаг 3. Назначьте IPv6-адреса интерфейсу управления (SVI) на S1.
 a.	Назначьте адрес IPv6 для S1. Также назначьте этому интерфейсу локальный адрес канала.
 Switch>en
 Switch#conf t
@@ -181,7 +185,7 @@ Vlan1 is up, line protocol is up
     FF02::1  
     FF02::1:FF00:0  
     FF02::1:FF00:B    
-Шаг 4. Назначьте компьютерам статические IPv6-адреса.  
+#### Шаг 4. Назначьте компьютерам статические IPv6-адреса.  
 a.	Откройте окно Свойства Ethernet для каждого ПК и назначьте адресацию IPv6.  
 b.	Убедитесь, что оба компьютера имеют правильную информацию адреса IPv6. Каждый компьютер должен иметь два глобальных адреса IPv6: один статический и один SLACC  
 
@@ -208,10 +212,11 @@ FastEthernet0 Connection:(default port)
    Subnet Mask.....................: 0.0.0.0  
    Default Gateway.................: FE80::1  
                                      0.0.0.0  
- Не получилось с разными адресами, нет реальной сети на IPv6 Чтобы это показать.  
+ Не получилось в PT с разными адресами, нет реальной сети на IPv6 Чтобы это показать.  
  
 ### Часть 3. Проверка сквозного подключения  
-С PC-A отправьте эхо-запрос на FE80::1. Это локальный адрес канала, назначенный G0/1 на R1.  
+- С PC-A отправьте эхо-запрос на FE80::1. Это локальный адрес канала, назначенный G0/1 на R1.  
+
 C:\>ping fe80::1  
 
 Pinging fe80::1 with 32 bytes of data:  
@@ -239,7 +244,9 @@ Ping statistics for 2001:DB8:ACAD:1::B:
     Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
 Approximate round trip times in milli-seconds:  
     Minimum = 0ms, Maximum = 2004ms, Average = 501ms  
-Введите команду tracert на PC-A, чтобы проверить наличие сквозного подключения к PC-B.  
+    
+- Введите команду tracert на PC-A, чтобы проверить наличие сквозного подключения к PC-B.
+
 C:\>tracert 2001:db8:acad:a::3  
 
 Tracing route to 2001:db8:acad:a::3 over a maximum of 30 hops: 
@@ -248,7 +255,9 @@ Tracing route to 2001:db8:acad:a::3 over a maximum of 30 hops:
   2   0 ms      0 ms      0 ms      2001:DB8:ACAD:A::3  
 
 Trace complete.  
-С PC-B отправьте эхо-запрос на PC-A.  
+
+- С PC-B отправьте эхо-запрос на PC-A.  
+
 C:\>ping 2001:db8:acad:1::3  
 
 Pinging 2001:db8:acad:1::3 with 32 bytes of data:
@@ -263,7 +272,8 @@ Ping statistics for 2001:DB8:ACAD:1::3:
 Approximate round trip times in milli-seconds:  
     Minimum = 0ms, Maximum = 0ms, Average = 0ms  
     
-С PC-B отправьте эхо-запрос на локальный адрес канала G0/0 на R1. 
+- С PC-B отправьте эхо-запрос на локальный адрес канала G0/0 на R1.
+
 C:\>ping 2001:db8:acad:a::1  
 
 Pinging 2001:db8:acad:a::1 with 32 bytes of data:
@@ -277,6 +287,7 @@ Ping statistics for 2001:DB8:ACAD: A::1:
     Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
 Approximate round trip times in milli-seconds:  
     Minimum = 0ms, Maximum = 0ms, Average = 0ms  
+    
 **Вопросы для повторения**  
 1.	Почему обоим интерфейсам Ethernet на R1 можно назначить один и тот же локальный адрес канала — FE80::1?  
 Link-local адрес и канал заканчиваются на интерфейсе маршрутизатора.
