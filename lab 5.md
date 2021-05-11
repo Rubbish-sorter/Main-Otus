@@ -128,7 +128,7 @@ R1#wr
 Building configuration...  
 [OK]  
 
-Шаг 6. Установите соединение с маршрутизатором по протоколу SSH.
+#### Шаг 6. Установите соединение с маршрутизатором по протоколу SSH.
 a.	Запустите Tera Term с PC-A.
 b.	Установите SSH-подключение к R1. Use the username admin and password Adm1nP@55. У вас должно получиться установить SSH-подключение к R1
 
@@ -157,8 +157,6 @@ Switch#conf t
 Enter configuration commands, one per line. End with CNTL/Z. 
 Switch(config)#no ip domain-lookup 
 Switch(config)#ser pass 
-Switch(config)#en secret class 
-% Ambiguous command: "en secret class" 
 Switch(config)#enable secret class 
 Switch(config)#line con 0 
 Switch(config-line)#pass cisco 
@@ -180,6 +178,84 @@ Switch(config-if)#do wr
 Building configuration...  
 [OK]  
 Switch(config-if)#exit  
+#### Шаг 2. Настройте коммутатор для соединения по протоколу SSH. 
+Для настройки протокола SSH на коммутаторе используйте те же команды, которые применялись для аналогичной настройки маршрутизатора в части 2.  
+a.	Настройте имя устройства, как указано в таблице адресации.   
+b.	Задайте домен для устройства.   
+c.	Создайте ключ шифрования с указанием его длины.   
+d.	Создайте имя пользователя в локальной базе учетных записей.  
+e.	Активируйте протоколы Telnet и SSH на линиях VTY.  
+f.	Измените способ входа в систему таким образом, чтобы использовалась проверка пользователей по локальной базе учетных записей.    
+Switch(config)#hostname S1   
+S1(config)#ip domain name test.com   
+S1(config)#cr key gen rsa  
+The name for the keys will be: S1.test.com  
+Choose the size of the key modulus in the range of 360 to 2048 for your  
+General Purpose Keys. Choosing a key modulus greater than 512 may take  
+a few minutes.  
+
+How many bits in the modulus [512]: 1024  
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]  
+S1(config)#username admin privilege 15 secret gasout  
+S1(config)#line vty 0 4  
+S1(config-line)#tr input all  
+S1(config-line)#login local   
+S1(config-line)#^Z  
+S1#  
+%SYS-5-CONFIG_I: Configured from console by console   
+
+#### Шаг 3. Установите соединение с коммутатором по протоколу SSH.
+Запустите программу Tera Term на PC-A, затем установите подключение по протоколу SSH к интерфейсу SVI коммутатора S1.  
+Вопрос: 
+Удалось ли вам установить SSH-соединение с коммутатором?  
+
+Password: gasout  
+
+Unauthorized access is strictly prohibited!  
+
+S1#  
+
+
+### Часть 4. Настройка протокола SSH с использованием интерфейса командной строки (CLI) коммутатора  
+#### Шаг 1. Посмотрите доступные параметры для клиента SSH в Cisco IOS.  
+S1# ssh?   
+  -c Select encryption algorithm  
+  -l Log in using this user name  
+  -m Select HMAC algorithm  
+  -o Specify options  
+  -p Connect to this port  
+  -v Specify SSH Protocol Version   
+  -vrf Specify vrf name  
+    WORD IP-адрес или имя хоста удаленной системы  
+    **Разбор отдельных параметров:** -с - алгоритм шифрования, -l - задать имя пользователя, -v - версия 1 (устаревшая) или 2, -p специфический порт,  
+    остальное используется слишком редко.  
+#### Шаг 2. Установите с коммутатора S1 соединение с маршрутизатором R1 по протоколу SSH.    
+a.	Чтобы подключиться к маршрутизатору R1 по протоколу SSH, введите команду –l admin. Это позволит вам войти в систему под именем admin. При появлении приглашения введите в качестве пароля Adm1nP@55   
+b.	Чтобы вернуться к коммутатору S1, не закрывая сеанс SSH с маршрутизатором R1, нажмите комбинацию клавиш Ctrl+Shift+6. Отпустите клавиши Ctrl+Shift+6 и нажмите x. Отображается приглашение привилегированного режима EXEC коммутатора.  
+c.	Чтобы вернуться к сеансу SSH на R1, нажмите клавишу Enter в пустой строке интерфейса командной строки. Чтобы увидеть окно командной строки маршрутизатора, нажмите клавишу Enter еще раз.  
+d.	Чтобы завершить сеанс SSH на маршрутизаторе R1, введите в командной строке маршрутизатора команду exit.  
+S1#  
+S1#ssh -l admin 192.168.1.1  
+Password: Adm1nP@55  
+
+Unauthorized access is strictly prohibited!  
+
+R1>  
+R1>exit  
+
+[Connection to 192.168.1.1 closed by foreign host]  
+S1#  
+
+Переключение не получилось в Packet Tracer.  
+**Вопрос:**
+Какие версии протокола SSH поддерживаются при использовании интерфейса командной строки?
+**Ответ:**
+Точно 1.3, 1.5, 2.0.
+
+
+
+
+
 
 
 
