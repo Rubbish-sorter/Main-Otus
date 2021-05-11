@@ -152,32 +152,32 @@ h.	Создайте баннер, который предупреждает о �
 i.	Настройте и активируйте на коммутаторе интерфейс VLAN 1, используя информацию, приведенную в таблице адресации.
 j.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.
 
-Switch>en 
-Switch#conf t 
-Enter configuration commands, one per line. End with CNTL/Z. 
-Switch(config)#no ip domain-lookup 
-Switch(config)#ser pass 
-Switch(config)#enable secret class 
-Switch(config)#line con 0 
-Switch(config-line)#pass cisco 
-Switch(config-line)#login 
-Switch(config-line)#line vty 0 4 
-Switch(config-line)#pass cisco 
-Switch(config-line)#login 
-Switch(config-line)#exit 
-Switch(config)#banner motd #Unauthorized access is strictly prohibited!# 
-Switch(config)#int vlan 1   
-Switch(config-if)#ip addr 192.168.1.11 255.255.255.0   
-Switch(config-if)#ip default-gateway 192.168.1.1  
-Switch(config-if)#no sh  
-Switch(config-if)#  
-%LINK-5-CHANGED: Interface Vlan1, changed state to up  
+Switch>en   
+Switch#conf t   
+Enter configuration commands, one per line. End with CNTL/Z.   
+Switch(config)#no ip domain-lookup   
+Switch(config)#ser pass   
+Switch(config)#enable secret class   
+Switch(config)#line con 0   
+Switch(config-line)#pass cisco   
+Switch(config-line)#login   
+Switch(config-line)#line vty 0 4   
+Switch(config-line)#pass cisco   
+Switch(config-line)#login   
+Switch(config-line)#exit   
+Switch(config)#banner motd #Unauthorized access is strictly prohibited!#   
+Switch(config)#int vlan 1     
+Switch(config-if)#ip addr 192.168.1.11 255.255.255.0     
+Switch(config-if)#ip default-gateway 192.168.1.1    
+Switch(config-if)#no sh    
+Switch(config-if)#    
+%LINK-5-CHANGED: Interface Vlan1, changed state to up    
 
-%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to up  
-Switch(config-if)#do wr  
-Building configuration...  
-[OK]  
-Switch(config-if)#exit  
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to up   
+Switch(config-if)#do wr    
+Building configuration...    
+[OK]     
+Switch(config-if)#exit    
 #### Шаг 2. Настройте коммутатор для соединения по протоколу SSH. 
 Для настройки протокола SSH на коммутаторе используйте те же команды, которые применялись для аналогичной настройки маршрутизатора в части 2.  
 a.	Настройте имя устройства, как указано в таблице адресации.   
@@ -227,8 +227,7 @@ S1# ssh?
   -v Specify SSH Protocol Version   
   -vrf Specify vrf name  
     WORD IP-адрес или имя хоста удаленной системы  
-    **Разбор отдельных параметров:** -с - алгоритм шифрования, -l - задать имя пользователя, -v - версия 1 (устаревшая) или 2, -p специфический порт,  
-    остальное используется слишком редко.  
+    **Разбор отдельных параметров:** -с - алгоритм шифрования, -l - задать имя пользователя, -v - версия 1 (устаревшая) или 2, -p специфический порт, остальное используется слишком редко.  
 #### Шаг 2. Установите с коммутатора S1 соединение с маршрутизатором R1 по протоколу SSH.    
 a.	Чтобы подключиться к маршрутизатору R1 по протоколу SSH, введите команду –l admin. Это позволит вам войти в систему под именем admin. При появлении приглашения введите в качестве пароля Adm1nP@55   
 b.	Чтобы вернуться к коммутатору S1, не закрывая сеанс SSH с маршрутизатором R1, нажмите комбинацию клавиш Ctrl+Shift+6. Отпустите клавиши Ctrl+Shift+6 и нажмите x. Отображается приглашение привилегированного режима EXEC коммутатора.  
@@ -243,14 +242,14 @@ Unauthorized access is strictly prohibited!
 R1>  
 R1>exit  
 
-[Connection to 192.168.1.1 closed by foreign host]  
-S1#  
+[Connection to 192.168.1.1 closed by foreign host]    
+S1#    
 
-Переключение не получилось в Packet Tracer.  
-**Вопрос:**
-Какие версии протокола SSH поддерживаются при использовании интерфейса командной строки?
-**Ответ:**
-Точно 1.3, 1.5, 2.0.
+Переключение не получилось в Packet Tracer.    
+**Вопрос:**   
+Какие версии протокола SSH поддерживаются при использовании интерфейса командной строки?  
+**Ответ:**  
+Точно 1.3, 1.5, 2.0.  
 
 
 
