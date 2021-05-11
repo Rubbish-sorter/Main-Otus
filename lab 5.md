@@ -120,14 +120,67 @@ How many bits in the modulus [512]: 1024
 R1(config)# username admin privilege 15 secret Adm1nP@55  
 *Mar 1 0:43:28.610: %SSH-5-ENABLED: SSH 1.99 has been enabled  
 R1(config-line)#transport input ssh   
-R1(config-line)#login local  
+R1(config-line)#login local    
 R1(config-line)#^Z  
-R1#
-%SYS-5-CONFIG_I: Configured from console by console  
+R1#  
+%SYS-5-CONFIG_I: Configured from console by console 
+R1#wr  
+Building configuration...  
+[OK]  
 
 Шаг 6. Установите соединение с маршрутизатором по протоколу SSH.
 a.	Запустите Tera Term с PC-A.
 b.	Установите SSH-подключение к R1. Use the username admin and password Adm1nP@55. У вас должно получиться установить SSH-подключение к R1
+
+Password: Adm1nP@55  
+
+Unauthorized access is strictly prohibited!  
+
+R1#  
+
+### Часть 3. Настройка коммутатора для доступа по протоколу SSH
+#### Шаг 1. Настройте основные параметры коммутатора.
+Откройте окно конфигурации
+a.	Подключитесь к коммутатору с помощью консольного подключения и активируйте привилегированный режим EXEC.
+b.	Войдите в режим конфигурации.
+c.	Отключите поиск DNS, чтобы предотвратить попытки маршрутизатора неверно преобразовывать введенные команды таким образом, как будто они являются именами узлов.
+d.	Назначьте class в качестве зашифрованного пароля привилегированного режима EXEC.
+e.	Назначьте cisco в качестве пароля консоли и включите вход в систему по паролю.
+f.	Назначьте cisco в качестве пароля VTY и включите вход в систему по паролю.
+g.	Зашифруйте открытые пароли.
+h.	Создайте баннер, который предупреждает о запрете несанкционированного доступа.
+i.	Настройте и активируйте на коммутаторе интерфейс VLAN 1, используя информацию, приведенную в таблице адресации.
+j.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.
+
+Switch>en 
+Switch#conf t 
+Enter configuration commands, one per line. End with CNTL/Z. 
+Switch(config)#no ip domain-lookup 
+Switch(config)#ser pass 
+Switch(config)#en secret class 
+% Ambiguous command: "en secret class" 
+Switch(config)#enable secret class 
+Switch(config)#line con 0 
+Switch(config-line)#pass cisco 
+Switch(config-line)#login 
+Switch(config-line)#line vty 0 4 
+Switch(config-line)#pass cisco 
+Switch(config-line)#login 
+Switch(config-line)#exit 
+Switch(config)#banner motd #Unauthorized access is strictly prohibited!# 
+Switch(config)#int vlan 1   
+Switch(config-if)#ip addr 192.168.1.11 255.255.255.0   
+Switch(config-if)#ip default-gateway 192.168.1.1  
+Switch(config-if)#no sh  
+Switch(config-if)#  
+%LINK-5-CHANGED: Interface Vlan1, changed state to up  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan1, changed state to up  
+Switch(config-if)#do wr  
+Building configuration...  
+[OK]  
+Switch(config-if)#exit  
+
 
 
 
