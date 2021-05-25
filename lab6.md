@@ -72,5 +72,75 @@ R1#clock set 21:00:00 05 may 2021
 R1#wr mem  
 Building configuration...  
 [OK]   
+ ### Шаг 3. Настройте базовые параметры каждого коммутатора.
+a.	Присвойте коммутатору имя устройства.  
+b.	Отключите поиск DNS, чтобы предотвратить попытки маршрутизатора неверно преобразовывать введенные команды таким образом, как будто они являются именами узлов.  
+c.	Назначьте class в качестве зашифрованного пароля привилегированного режима EXEC.  
+d.	Назначьте cisco в качестве пароля консоли и включите вход в систему по паролю.  
+e.	Установите cisco в качестве пароля виртуального терминала и активируйте вход.  
+f.	Зашифруйте открытые пароли.  
+g.	Создайте баннер с предупреждением о запрете несанкционированного доступа к устройству.  
+h.	Настройте на коммутаторах время.  
+i.	Сохранение текущей конфигурации в качестве начальной.  
+Switch>en  
+Switch#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Switch(config)#hostname S1  
+S1(config)#banner motd #Unauthorized access is strictly prohibited!#  
+S1(config)#no ip domain lookup  
+S1(config)#ser pass  
+S1(config)#enable secret class   
+S1(config)#line con 0  
+S1(config-line)#logging sync  
+S1(config-line)#pass cisco  
+S1(config-line)#login  
+S1(config-line)#line vty 0 4  
+S1(config-line)#pass cisco  
+S1(config-line)#login  
+S1(config-line)#^Z  
+S1#  
+%SYS-5-CONFIG_I: Configured from console by console  
+
+S1#clock set 21:05:00 5 may 2021  
+S1#wr mem  
+Building configuration...  
+[OK]  
+
+Switch>en  
+Switch#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Switch(config)#hostname S2  
+S2(config)#banner motd #Unauthorized access is strictly prohibited!#  
+S2(config)#ser pass  
+S2(config)#enable secret class  
+S2(config)#no ip domain lookup  
+S2(config)#line con 0  
+S2(config-line)#pass cisco  
+S2(config-line)#login  
+S2(config-line)#line vty 0 4  
+S2(config-line)#pass cisco  
+S2(config-line)#login  
+S2(config-line)#^Z  
+S2#  
+%SYS-5-CONFIG_I: Configured from console by console  
  
+S2#clock set 21:10:00 5 may 2021  
+S2#wr mem  
+Building configuration...  
+[OK]  
+
+Шаг 4. Настройте узлы ПК.
+Адреса ПК можно посмотреть в таблице адресации.
+Часть 2. Создание сетей VLAN и назначение портов коммутатора
+Во второй части вы создадите VLAN, как указано в таблице выше, на обоих коммутаторах. Затем вы назначите VLAN соответствующему интерфейсу и проверите настройки конфигурации. Выполните следующие задачи на каждом коммутаторе.
+Шаг 1. Создайте сети VLAN на коммутаторах.
+a.	Создайте и назовите необходимые VLAN на каждом коммутаторе из таблицы выше.
+Откройте окно конфигурации
+b.	Настройте интерфейс управления и шлюз по умолчанию на каждом коммутаторе, используя информацию об IP-адресе в таблице адресации. 
+c.	Назначьте все неиспользуемые порты коммутатора VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их.
+Примечание. Команда interface range полезна для выполнения этой задачи с минимальным количеством команд.
+Шаг 2. Назначьте сети VLAN соответствующим интерфейсам коммутатора.
+a.	Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
+b.	Убедитесь, что VLAN назначены на правильные интерфейсы.
+
 
