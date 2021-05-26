@@ -82,6 +82,7 @@ f.	Зашифруйте открытые пароли.
 g.	Создайте баннер с предупреждением о запрете несанкционированного доступа к устройству.  
 h.	Настройте на коммутаторах время.  
 i.	Сохранение текущей конфигурации в качестве начальной.  
+**S1**  
 Switch>en  
 Switch#conf t  
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -105,7 +106,7 @@ S1#clock set 21:05:00 5 may 2021
 S1#wr mem  
 Building configuration...  
 [OK]  
-
+**S2**  
 Switch>en  
 Switch#conf t  
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -131,13 +132,37 @@ Building configuration...
 
 #### Шаг 4. Настройте узлы ПК.  
 Адреса ПК можно посмотреть в таблице адресации.  
+**PC-A**  
+C:\>ipconfig  
+FastEthernet0 Connection:(default port)  
+
+   Connection-specific DNS Suffix..:    
+   Link-local IPv6 Address.........: FE80::20D:BDFF:FEC9:49E7  
+   IPv6 Address....................: ::
+   IPv4 Address....................: 192.168.20.3  
+   Subnet Mask.....................: 255.255.255.0  
+   Default Gateway.................: ::  
+                                     192.168.20.1  
+**PC-B**  
+C:\>ipconfig  
+FastEthernet0 Connection:(default port)  
+ 
+   Connection-specific DNS Suffix..:   
+   Link-local IPv6 Address.........: FE80::2D0:BCFF:FEAD:1215  
+   IPv6 Address....................: ::  
+   IPv4 Address....................: 192.168.30.3  
+   Subnet Mask.....................: 255.255.255.0  
+   Default Gateway.................: ::  
+                                     192.168.30.1  
+                                     
+
 ### Часть 2. Создание сетей VLAN и назначение портов коммутатора    
 Шаг 1. Создайте сети VLAN на коммутаторах.   
 a.	Создайте и назовите необходимые VLAN на каждом коммутаторе из таблицы выше.  
 Откройте окно конфигурации  
 b.	Настройте интерфейс управления и шлюз по умолчанию на каждом коммутаторе, используя информацию об IP-адресе в таблице адресации.   
 c.	Назначьте все неиспользуемые порты коммутатора VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их.  
-Примечание. Команда interface range полезна для выполнения этой задачи с минимальным количеством команд.  
+**S1**  
 S1>en  
 Password:   
 S1#conf t  
@@ -148,8 +173,16 @@ S1(config)#vlan 20
 S1(config-vlan)#name sales  
 S1(config-vlan)#vlan 999  
 S1(config-vlan)#name parking_lot   
-S1(config-vlan)#exit  
-S1(config)#int range f0/2-4  
+S1(config-vlan)#exit 
+S1(config-if)#int vlan 10    
+S1(config-if)#   
+%LINK-5-CHANGED: Interface Vlan10, changed state to up   
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up   
+
+S1(config-if)#ip addr 192.168.10.11 255.255.255.0   
+S1(config-if)#ip default-gateway 192.168.10.1  
+S1(config-if)#int range f0/2-4  
 S1(config-if-range)#switchport mode access  
 S1(config-if-range)#sw acc vlan 999  
 S1(config-if-range)#sh   
@@ -165,6 +198,7 @@ S1(config-if-range)#sh
 S1(config-if-range)#end
 S1#
 %SYS-5-CONFIG_I: Configured from console by console  
+
 S1#sh vlan   
 
 VLAN Name                             Status    Ports  
@@ -178,8 +212,9 @@ VLAN Name                             Status    Ports
                                                 Fa0/16, Fa0/17, Fa0/18, Fa0/19  
                                                 Fa0/20, Fa0/21, Fa0/22, Fa0/23   
                                                 Fa0/24, Gig0/1, Gig0/2  
-........................  
-  
+........................ 
+
+ **S2**   
 S2>en  
 Password:   
 S2#conf t   
@@ -192,8 +227,17 @@ S2(config-vlan)#name Sales
 S2(config-vlan)#ex  
 S2(config)#vlan 30  
 S2(config-vlan)#name operations  
+S2(config-vlan)vlan 999  
+S2(config-vlan)#name parking_lot    
 S2(config-vlan)#ex  
-S2(config)# int range g0/1-2   
+S2(config-if)#int vlan 10  
+S2(config-if)#  
+%LINK-5-CHANGED: Interface Vlan10, changed state to up  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up  
+ip addr 192.168.10.12 255.255.255.0  
+S2(config-if)#ip default-gateway 192.168.10.1  
+S2(config-if)# int range g0/1-2   
 S2(config-if-range)#sw mode acc  
 S2(config-if-range)#sw acc vlan 999  
 S2(config-if-range)#sh  
@@ -208,6 +252,9 @@ S2(config-if-range)#end
 S2#  
 %SYS-5-CONFIG_I: Configured from console by console  
 S2#sh vlan  
+#### Шаг 2. Назначьте сети VLAN соответствующим интерфейсам коммутатора.
+a.	Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
+b.	Убедитесь, что VLAN назначены на правильные интерфейсы.
 
 VLAN Name                             Status    Ports  
 ---- -------------------------------- --------- -------------------------------  
@@ -220,8 +267,8 @@ VLAN Name                             Status    Ports
                                                 Fa0/10, Fa0/11, Fa0/12, Fa0/13  
                                                 Fa0/14, Fa0/15, Fa0/16, Fa0/17  
                                                 Fa0/19, Fa0/20, Fa0/21, Fa0/22  
-                                                Fa0/23, Fa0/24, Gig0/1, Gig0/2  
-                                                
+                                                Fa0/23, Fa0/24, Gig0/1, Gig0/2 
+
                                                
 
 
