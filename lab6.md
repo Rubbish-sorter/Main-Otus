@@ -371,6 +371,77 @@ Building configuration...
 Не будет маршрутизации между VLAN.  
 
 
+
+
+### Часть 4. Настройка маршрутизации между сетями VLAN  
+#### Шаг 1. Настройте маршрутизатор.  
+Откройте окно конфигурации
+a.	При необходимости активируйте интерфейс G0/0/1 на маршрутизаторе.  
+b.	Настройте подинтерфейсы для каждой VLAN, как указано в таблице IP-адресации. Все подинтерфейсы используют инкапсуляцию 802.1Q. Убедитесь, что подинтерфейсу для native VLAN не назначен IP-адрес. Включите описание для каждого подинтерфейса.  
+c.	Убедитесь, что вспомогательные интерфейсы работают  
+R1(config)#int g0/0/1.10   
+R1(config-subif)#enc dot1q 10  
+R1(config-subif)#enc dot1q 1000 native  
+R1(config-subif)#ip addr 192.168.10.1 255.255.255.0  
+R1(config-subif)#int g0/0/1.20  
+R1(config-subif)#enc dot1q 20  
+R1(config-subif)#ip addr 192.168.20.1 255.255.255.0
+R1(config-subif)#int g0/0/1.30 
+R1(config-subif)#enc dot1q 30  
+R1(config-subif)#ip addr 192.168.30.1 255.255.255.0
+R1(config-subif)#end  
+R1#wr  
+Building configuration...  
+[OK]  
+R1#sh int   
+GigabitEthernet0/0/0 is administratively down, line protocol is down (disabled)   
+  ........    
+GigabitEthernet0/0/1 is up, line protocol is up (connected)    
+ ......  
+GigabitEthernet0/0/1.10 is up, line protocol is up (connected)  
+  ......   
+GigabitEthernet0/0/1.20 is up, line protocol is up (connected)  
+  Hardware is PQUICC_FEC, address is 00d0.ff87.1802 (bia 00d0.ff87.1802)  
+  Internet address is 192.168.20.1/24  
+  ........  
+  Encapsulation 802.1Q Virtual LAN, Vlan ID 20   
+ ......  
+GigabitEthernet0/0/1.30 is up, line protocol is up (connected)  
+  Hardware is PQUICC_FEC, address is 00d0.ff87.1802 (bia 00d0.ff87.1802)  
+  Internet address is 192.168.30.1/24  
+  .....  
+  Encapsulation 802.1Q Virtual LAN, Vlan ID 30   
+  ....  
+GigabitEthernet0/0/1.1000 is up, line protocol is up (connected)  
+  Hardware is PQUICC_FEC, address is 00d0.ff87.1802 (bia 00d0.ff87.1802)  
+  ........  
+Vlan1 is administratively down, line protocol is down  
+  .......  
+### Часть 5. Проверьте, работает ли маршрутизация между VLAN
+Шаг 1. Выполните следующие тесты с PC-A. Все должно быть успешно.  
+a.	Отправьте эхо-запрос с PC-A на шлюз по умолчанию.  
+C:\>ping 192.168.20.1  
+
+Pinging 192.168.20.1 with 32 bytes of data:  
+
+Reply from 192.168.20.1: bytes=32 time=18ms TTL=255  
+Reply from 192.168.20.1: bytes=32 time<1ms TTL=255  
+Reply from 192.168.20.1: bytes=32 time=1ms TTL=255  
+Reply from 192.168.20.1: bytes=32 time<1ms TTL=255  
+
+Ping statistics for 192.168.20.1:  
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
+Approximate round trip times in milli-seconds:  
+    Minimum = 0ms, Maximum = 18ms, Average = 4ms  
+b.	Отправьте эхо-запрос с PC-A на PC-B. 
+
+c.	Отправьте команду ping с компьютера PC-A на коммутатор S2.
+Шаг 2. Пройдите следующий тест с PC-B
+В окне командной строки на PC-B выполните команду tracert на адрес PC-A.
+Вопрос:
+Какие промежуточные IP-адреса отображаются в результатах?
+
+
                                                
 
 
