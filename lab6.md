@@ -198,21 +198,7 @@ S1(config-if-range)#sh
 S1(config-if-range)#end
 S1#
 %SYS-5-CONFIG_I: Configured from console by console  
-
-S1#sh vlan   
-
-VLAN Name                             Status    Ports  
----- -------------------------------- --------- -------------------------------  
-1    default                          active        
-10   management                       active    
-20   sales                            active    Fa0/6  
-999  parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/7  
-                                                Fa0/8, Fa0/9, Fa0/10, Fa0/11  
-                                                Fa0/12, Fa0/13, Fa0/14, Fa0/15  
-                                                Fa0/16, Fa0/17, Fa0/18, Fa0/19  
-                                                Fa0/20, Fa0/21, Fa0/22, Fa0/23   
-                                                Fa0/24, Gig0/1, Gig0/2  
-........................ 
+  
 
  **S2**   
 S2>en  
@@ -250,24 +236,140 @@ S2(config-if-range)#sw acc vlan 999
 S2(config-if-range)#sh  
 S2(config-if-range)#end 
 S2#  
-%SYS-5-CONFIG_I: Configured from console by console  
-S2#sh vlan  
+%SYS-5-CONFIG_I: Configured from console by console    
 #### Шаг 2. Назначьте сети VLAN соответствующим интерфейсам коммутатора.
 a.	Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
 b.	Убедитесь, что VLAN назначены на правильные интерфейсы.
+**S1**
+S1#conf t
+S1(config)#int f0/6  
+S1(config-if)#sw mode acc  
+S1(config-if)#sw acc vlan 20  
+S1(config-if)#^Z
+%SYS-5-CONFIG_I: Configured from console by console
+S1#sh vlan
+VLAN Name                             Status    Ports    
+---- -------------------------------- --------- -------------------------------    
+1    default                          active          
+10   management                       active    
+20   sales                            active    Fa0/6    
+999  parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/7    
+                                                Fa0/8, Fa0/9, Fa0/10, Fa0/11    
+                                                Fa0/12, Fa0/13, Fa0/14, Fa0/15    
+                                                Fa0/16, Fa0/17, Fa0/18, Fa0/19     
+                                                Fa0/20, Fa0/21, Fa0/22, Fa0/23     
+                                                Fa0/24, Gig0/1, Gig0/2    
+........................
 
-VLAN Name                             Status    Ports  
----- -------------------------------- --------- -------------------------------  
-1    default                          active      
-10   management                       active      
+**S2**
+S2(config)#int f0/18
+S2(config-if)#sw mode acc
+S2(config-if)#sw acc vlan 30
+S2(config-if)#^Z
+%SYS-5-CONFIG_I: Configured from console by console
+S2#sh vlan
+VLAN Name                             Status    Ports    
+---- -------------------------------- --------- -------------------------------    
+1    default                          active        
+10   management                       active        
 20   Sales                            active      
-30   operations                       active    Fa0/18  
-999  parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/5  
-                                                Fa0/6, Fa0/7, Fa0/8, Fa0/9  
-                                                Fa0/10, Fa0/11, Fa0/12, Fa0/13  
-                                                Fa0/14, Fa0/15, Fa0/16, Fa0/17  
+30   operations                       active    Fa0/18    
+999  parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/5    
+                                                Fa0/6, Fa0/7, Fa0/8, Fa0/9    
+                                                Fa0/10, Fa0/11, Fa0/12, Fa0/13    
+                                                Fa0/14, Fa0/15, Fa0/16, Fa0/17    
                                                 Fa0/19, Fa0/20, Fa0/21, Fa0/22  
-                                                Fa0/23, Fa0/24, Gig0/1, Gig0/2 
+                                             Fa0/23, Fa0/24, Gig0/1, Gig0/2 
+### Часть 3. Конфигурация магистрального канала стандарта 802.1Q между коммутаторами
+Шаг 1. Вручную настройте магистральный интерфейс F0/1 на коммутаторах S1 и S2.  
+a.	Настройка статического транкинга на интерфейсе F0/1 для обоих коммутаторов.  
+Откройте окно конфигурации  
+b.	Установите native VLAN 1000 на обоих коммутаторах.  
+c.	Укажите, что VLAN 10, 20, 30 и 1000 могут проходить по транку.  
+d.	Проверьте транки, native VLAN и разрешенные VLAN через транк.  
+**S1**  
+S1(config)#int f0/1  
+S1(config-if)#sw mode tr 
+S1(config-if)#  
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to down  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/1, changed state to up  
+
+S1(config-if)#sw tr native vlan 1000  
+S1(config-if)#sw tr allowed vlan 10,20,30,1000  
+S1(config-if)#   
+%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on FastEthernet0/1 (1000), with S2 FastEthernet0/1 (1).    
+S1(config-if)#^Z  
+%SYS-5-CONFIG_I: Configured from console by console  
+S1#sh int f0/1 switchport  
+Name: Fa0/1  
+Switchport: Enabled  
+Administrative Mode: trunk  
+Operational Mode: trunk  
+Administrative Trunking Encapsulation: dot1q  
+Operational Trunking Encapsulation: dot1q  
+Negotiation of Trunking: On  
+Access Mode VLAN: 1 (default)  
+Trunking Native Mode VLAN: 1000 (Inactive)  
+........  
+Trunking VLANs Enabled: 10,20,30,1000  
+........  
+**S2**  
+S2(config)#  
+ S2(config-if-range)#int f0/1  
+S2(config-if)#sw mode tr   
+S2(config-if)#sw tr nat vlan 1000  
+S2(config-if)#sw tr allowed vlan 10,20,30,1000  
+S2(config-if)#^Z  
+%SYS-5-CONFIG_I: Configured from console by console   
+S2#sh int f0/1 switchport  
+Name: Fa0/1  
+Switchport: Enabled  
+Administrative Mode: trunk  
+Operational Mode: trunk  
+Administrative Trunking Encapsulation: dot1q  
+Operational Trunking Encapsulation: dot1q  
+Negotiation of Trunking: On  
+Access Mode VLAN: 1 (default)  
+Trunking Native Mode VLAN: 1000 (Inactive)  
+..............  
+Trunking VLANs Enabled: 10,20,30,1000  
+........   
+#### Шаг 2. Вручную настройте магистральный интерфейс F0/5 на коммутаторе S1.  
+a.	Настройте интерфейс S1 F0/5 с теми же параметрами транка, что и F0/1. Это транк до маршрутизатора.  
+b.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.  
+c.	Проверка транкинга.  
+S1(config-if)#int f0/6  
+S1(config-if)#sw mode acc  
+S1(config-if)#sw acc vlan 20  
+S1(config-if)#do wr  
+Building configuration...   
+[OK]  
+S1#sh int f0/5 sw  
+Name: Fa0/5  
+Switchport: Enabled  
+Administrative Mode: trunk   
+Operational Mode: trunk    
+Administrative Trunking Encapsulation: dot1q  
+Operational Trunking Encapsulation: dot1q  
+Negotiation of Trunking: On  
+Access Mode VLAN: 1 (default) 
+Trunking Native Mode VLAN: 1000 (VLAN1000)   
+.........   
+Trunking VLANs Enabled: 10,20,30,1000  
+......    
+**S2 F0/18**  
+S2(config)#int f0/18  
+S2(config-if)#sw mode acc  
+S2(config-if)#sw acc vlan 30  
+S2(config-if)#do wr    
+Building configuration...     
+[OK]    
+**Вопрос:**  
+Что произойдет, если G0/0/1 на R1 будет отключен?   
+**Ответ:**  
+Не будет маршрутизации между VLAN.  
+
 
                                                
 
