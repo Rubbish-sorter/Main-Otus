@@ -169,12 +169,16 @@ S1#conf t
 Enter configuration commands, one per line. End with CNTL/Z.  
 S1(config)#vlan 10  
 S1(config-vlan)#name management  
-S1(config)#vlan 20  
-S1(config-vlan)#name sales  
+S1(config-vlan)#vlan 20  
+S1(config-vlan)#name sales
+S1(config-vlan)#vlan 30  
+S1(config-vlan)#name operations    
 S1(config-vlan)#vlan 999  
-S1(config-vlan)#name parking_lot   
+S1(config-vlan)#name parking_lot
+S2(config-vlan)#vlan 1000  
+S2(config-vlan)#name native
 S1(config-vlan)#exit 
-S1(config-if)#int vlan 10    
+S1(config)#int vlan 10    
 S1(config-if)#   
 %LINK-5-CHANGED: Interface Vlan10, changed state to up   
 
@@ -212,7 +216,9 @@ S2(config)#vlan 20
 S2(config-vlan)#name Sales  
 S2(config-vlan)#ex  
 S2(config)#vlan 30  
-S2(config-vlan)#name operations  
+S2(config-vlan)#name operations
+S2(config-vlan)#vlan 1000  
+S2(config-vlan)# name native
 S2(config-vlan)vlan 999  
 S2(config-vlan)#name parking_lot    
 S2(config-vlan)#ex  
@@ -252,13 +258,15 @@ VLAN Name                             Status    Ports
 ---- -------------------------------- --------- -------------------------------    
 1    default                          active          
 10   management                       active    
-20   sales                            active    Fa0/6    
+20   sales                            active    Fa0/6 
+30   operations                       active  
 999  parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/7    
                                                 Fa0/8, Fa0/9, Fa0/10, Fa0/11    
                                                 Fa0/12, Fa0/13, Fa0/14, Fa0/15    
                                                 Fa0/16, Fa0/17, Fa0/18, Fa0/19     
                                                 Fa0/20, Fa0/21, Fa0/22, Fa0/23     
-                                                Fa0/24, Gig0/1, Gig0/2    
+                                                Fa0/24, Gig0/1, Gig0/2   
+ 1000 native                          active                                                 
 ........................
 
 **S2**
@@ -279,7 +287,8 @@ VLAN Name                             Status    Ports
                                                 Fa0/10, Fa0/11, Fa0/12, Fa0/13    
                                                 Fa0/14, Fa0/15, Fa0/16, Fa0/17    
                                                 Fa0/19, Fa0/20, Fa0/21, Fa0/22  
-                                             Fa0/23, Fa0/24, Gig0/1, Gig0/2 
+                                             Fa0/23, Fa0/24, Gig0/1, Gig0/2
+1000  native                        active                     
 ### Часть 3. Конфигурация магистрального канала стандарта 802.1Q между коммутаторами
 Шаг 1. Вручную настройте магистральный интерфейс F0/1 на коммутаторах S1 и S2.  
 a.	Настройка статического транкинга на интерфейсе F0/1 для обоих коммутаторов.  
@@ -424,7 +433,7 @@ C:\>ping 192.168.20.1
 
 Pinging 192.168.20.1 with 32 bytes of data:  
 
-Reply from 192.168.20.1: bytes=32 time=18ms TTL=255  
+Reply from 192.168.20.1: bytes=32 time=18ms TTL=255    
 Reply from 192.168.20.1: bytes=32 time<1ms TTL=255  
 Reply from 192.168.20.1: bytes=32 time=1ms TTL=255  
 Reply from 192.168.20.1: bytes=32 time<1ms TTL=255  
@@ -434,9 +443,22 @@ Ping statistics for 192.168.20.1:
 Approximate round trip times in milli-seconds:  
     Minimum = 0ms, Maximum = 18ms, Average = 4ms  
 b.	Отправьте эхо-запрос с PC-A на PC-B. 
+C:\>ping 192.168.30.3  
 
+Pinging 192.168.30.3 with 32 bytes of data:  
+
+Request timed out.  
+Reply from 192.168.30.3: bytes=32 time=49ms TTL=127  
+Reply from 192.168.30.3: bytes=32 time<1ms TTL=127  
+Reply from 192.168.30.3: bytes=32 time=1ms TTL=127  
+
+Ping statistics for 192.168.30.3:  
+Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 49ms, Average = 16ms  
 c.	Отправьте команду ping с компьютера PC-A на коммутатор S2.
-Шаг 2. Пройдите следующий тест с PC-B
+
+#### Шаг 2. Пройдите следующий тест с PC-B
 В окне командной строки на PC-B выполните команду tracert на адрес PC-A.
 Вопрос:
 Какие промежуточные IP-адреса отображаются в результатах?
