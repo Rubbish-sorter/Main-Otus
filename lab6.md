@@ -33,9 +33,9 @@
 
 ### Часть 1. Создание сети и настройка основных параметров устройства  
 В первой части лабораторной работы вам предстоит создать топологию сети и настроить базовые параметры для узлов ПК и коммутаторов.  
-Шаг 1. Создайте сеть согласно топологии.  
+#### Шаг 1. Создайте сеть согласно топологии.  
 Подключите устройства, как показано в топологии, и подсоедините необходимые кабели.  
-Шаг 2. Настройте базовые параметры для маршрутизатора.  
+#### Шаг 2. Настройте базовые параметры для маршрутизатора.  
 a.	Подключитесь к маршрутизатору с помощью консоли и активируйте привилегированный режим EXEC.  
 Откройте окно конфигурации  
 b.	Войдите в режим конфигурации.  
@@ -72,7 +72,7 @@ R1#clock set 21:00:00 05 may 2021
 R1#wr mem  
 Building configuration...  
 [OK]   
- ### Шаг 3. Настройте базовые параметры каждого коммутатора.
+#### Шаг 3. Настройте базовые параметры каждого коммутатора.
 a.	Присвойте коммутатору имя устройства.  
 b.	Отключите поиск DNS, чтобы предотвратить попытки маршрутизатора неверно преобразовывать введенные команды таким образом, как будто они являются именами узлов.  
 c.	Назначьте class в качестве зашифрованного пароля привилегированного режима EXEC.  
@@ -175,9 +175,9 @@ S1(config-vlan)#vlan 30
 S1(config-vlan)#name operations    
 S1(config-vlan)#vlan 999  
 S1(config-vlan)#name parking_lot
-S2(config-vlan)#vlan 1000  
-S2(config-vlan)#name native
-S1(config-vlan)#exit 
+S1(config-vlan)#vlan 1000    
+S1(config-vlan)#name native  
+S1(config-vlan)#exit   
 S1(config)#int vlan 10    
 S1(config-if)#   
 %LINK-5-CHANGED: Interface Vlan10, changed state to up   
@@ -216,10 +216,10 @@ S2(config)#vlan 20
 S2(config-vlan)#name Sales  
 S2(config-vlan)#ex  
 S2(config)#vlan 30  
-S2(config-vlan)#name operations
-S2(config-vlan)#vlan 1000  
-S2(config-vlan)# name native
-S2(config-vlan)vlan 999  
+S2(config-vlan)#name operations  
+S2(config-vlan)#vlan 1000    
+S2(config-vlan)# name native  
+S2(config-vlan)vlan 999    
 S2(config-vlan)#name parking_lot    
 S2(config-vlan)#ex  
 S2(config-if)#int vlan 10  
@@ -227,20 +227,20 @@ S2(config-if)#
 %LINK-5-CHANGED: Interface Vlan10, changed state to up  
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up  
-ip addr 192.168.10.12 255.255.255.0  
-S2(config-if)#ip default-gateway 192.168.10.1  
+ip addr 192.168.10.12 255.255.255.0   
+S2(config-if)#ip default-gateway 192.168.10.1   
 S2(config-if)# int range g0/1-2   
-S2(config-if-range)#sw mode acc  
+S2(config-if-range)#sw mode acc   
+S2(config-if-range)#sw acc vlan 999   
+S2(config-if-range)#sh   
+S2(config-if-range)#sw mode acc    
+S2(config-if-range)#sw acc vlan 999   
+S2(config-if-range)#sh   
+S2(config-if-range)#int range f0/19-24   
+S2(config-if-range)#sw mode acc   
 S2(config-if-range)#sw acc vlan 999  
-S2(config-if-range)#sh  
-S2(config-if-range)#sw mode acc  
-S2(config-if-range)#sw acc vlan 999  
-S2(config-if-range)#sh  
-S2(config-if-range)#int range f0/19-24  
-S2(config-if-range)#sw mode acc  
-S2(config-if-range)#sw acc vlan 999  
-S2(config-if-range)#sh  
-S2(config-if-range)#end 
+S2(config-if-range)#sh   
+S2(config-if-range)#end  
 S2#  
 %SYS-5-CONFIG_I: Configured from console by console    
 #### Шаг 2. Назначьте сети VLAN соответствующим интерфейсам коммутатора.  
