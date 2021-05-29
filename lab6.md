@@ -390,14 +390,15 @@ b.	Настройте подинтерфейсы для каждой VLAN, ка�
 c.	Убедитесь, что вспомогательные интерфейсы работают  
 R1(config)#int g0/0/1.10   
 R1(config-subif)#enc dot1q 10  
-R1(config-subif)#enc dot1q 1000 native  
 R1(config-subif)#ip addr 192.168.10.1 255.255.255.0  
 R1(config-subif)#int g0/0/1.20  
-R1(config-subif)#enc dot1q 20  
-R1(config-subif)#ip addr 192.168.20.1 255.255.255.0
-R1(config-subif)#int g0/0/1.30 
-R1(config-subif)#enc dot1q 30  
+R1(config-subif)#enc dot1q 20    
+R1(config-subif)#ip addr 192.168.20.1 255.255.255.0  
+R1(config-subif)#int g0/0/1.30     
+R1(config-subif)#enc dot1q 30    
 R1(config-subif)#ip addr 192.168.30.1 255.255.255.0
+R1(config-subif)#int g0/0/1.1000       
+R1(config-subif)#enc dot1q 1000 native   
 R1(config-subif)#end  
 R1#wr  
 Building configuration...  
@@ -429,6 +430,7 @@ Vlan1 is administratively down, line protocol is down
 ### Часть 5. Проверьте, работает ли маршрутизация между VLAN
 Шаг 1. Выполните следующие тесты с PC-A. Все должно быть успешно.  
 a.	Отправьте эхо-запрос с PC-A на шлюз по умолчанию.  
+
 C:\>ping 192.168.20.1  
 
 Pinging 192.168.20.1 with 32 bytes of data:  
@@ -442,7 +444,9 @@ Ping statistics for 192.168.20.1:
     Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
 Approximate round trip times in milli-seconds:  
     Minimum = 0ms, Maximum = 18ms, Average = 4ms  
+    
 b.	Отправьте эхо-запрос с PC-A на PC-B. 
+
 C:\>ping 192.168.30.3  
 
 Pinging 192.168.30.3 with 32 bytes of data:  
@@ -456,13 +460,35 @@ Ping statistics for 192.168.30.3:
 Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),  
 Approximate round trip times in milli-seconds:  
 Minimum = 0ms, Maximum = 49ms, Average = 16ms  
-c.	Отправьте команду ping с компьютера PC-A на коммутатор S2.
+c.	Отправьте команду ping с компьютера PC-A на коммутатор S2.  
 
-#### Шаг 2. Пройдите следующий тест с PC-B
-В окне командной строки на PC-B выполните команду tracert на адрес PC-A.
-Вопрос:
+  C:\>ping 192.168.10.12  
+
+Pinging 192.168.10.12 with 32 bytes of data:  
+ 
+Request timed out.  
+Request timed out.  
+Reply from 192.168.10.12: bytes=32 time<1ms TTL=254  
+Reply from 192.168.10.12: bytes=32 time<1ms TTL=254  
+
+Ping statistics for 192.168.10.12:  
+    Packets: Sent = 4, Received = 2, Lost = 2 (50% loss),  
+Approximate round trip times in milli-seconds:  
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms  
+#### Шаг 2. Пройдите следующий тест с PC-B  
+В окне командной строки на PC-B выполните команду tracert на адрес PC-A.  
+**Вопрос:**
 Какие промежуточные IP-адреса отображаются в результатах?
 
+C:\>tracert 192.168.20.3  
+
+Tracing route to 192.168.20.3 over a maximum of 30 hops:   
+
+  1   0 ms      1 ms      0 ms      192.168.30.1  
+  2   0 ms      0 ms      0 ms      192.168.20.3  
+
+Trace complete.
+**Ответ:** только адрес основного шлюза для PC-B 192.168.30.1. 
 
                                                
 
