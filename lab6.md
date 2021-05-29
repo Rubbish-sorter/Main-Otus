@@ -487,7 +487,7 @@ Tracing route to 192.168.20.3 over a maximum of 30 hops:
   1   0 ms      1 ms      0 ms      192.168.30.1  
   2   0 ms      0 ms      0 ms      192.168.20.3  
 
-Trace complete.
+Trace complete.  
 **Ответ:** только адрес основного шлюза для PC-B 192.168.30.1. 
 
                                                
