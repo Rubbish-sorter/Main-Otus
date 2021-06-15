@@ -29,8 +29,8 @@ d.	Назначьте cisco в качестве паролей консоли и
 e.	Настройте logging synchronous для консольного канала.  
 f.	Настройте баннерное сообщение дня (MOTD) для предупреждения пользователей о запрете несанкционированного доступа.  
 g.	Задайте IP-адрес, указанный в таблице адресации для VLAN 1 на всех коммутаторах.  
-h.	Скопируйте текущую конфигурацию в файл загрузочной конфигурации.  
-**S1**
+h.	Скопируйте текущую конфигурацию в файл загрузочной конфигурации.    
+**S1**    
 Switch>en  
 Switch#conf t  
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -58,7 +58,7 @@ S1#
 S1#copy run start 
 Building configuration...  
 [OK]  
-**S2** 
+**S2**   
 Switch>en  
 Switch#conf t  
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -84,7 +84,7 @@ S2(config-if)#^Z
 S2#copy run start    
 Building configuration...    
 [OK]   
-**S3**
+**S3**  
 Switch>en  
 Switch#conf t  
 Enter configuration commands, one per line. End with CNTL/Z.  
@@ -119,8 +119,8 @@ Building configuration...
 #### Часть 2:	Определение корневого моста    
 Шаг 1:	Отключите все порты на коммутаторах.  
 Шаг 2:	Настройте подключенные порты в качестве транковых.  
-Шаг 3:	Включите порты F0/2 и F0/4 на всех коммутаторах. 
-**S1**   
+Шаг 3:	Включите порты F0/2 и F0/4 на всех коммутаторах.   
+**S1**       
 S1#conf t    
 Enter configuration commands, one per line. End with CNTL/Z.  
 S1(config)#int range f0/1-24  
@@ -151,7 +151,7 @@ S1(config-if)#
 %LINK-5-CHANGED: Interface FastEthernet0/4, changed state to up    
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/4, changed state to up  
-**S2**  
+**S2**    
 S2#conf t    
 Enter configuration commands, one per line. End with CNTL/Z.  
 S2(config)#int range f0/1-24  
@@ -183,7 +183,7 @@ S2(config-if)#
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface FastEthernet0/4, changed state to up   
 
-**S3**  
+**S3**       
 S3#conf t    
 Enter configuration commands, one per line. End with CNTL/Z.  
 S3(config)#int range f0/1-24  
@@ -273,6 +273,7 @@ Interface Role Sts Cost Prio.Nbr Type
 Fa0/2 Desg FWD 19 128.2 P2p  
 Fa0/4 Root FWD 19 128.4 P2p  
 ![lab 7 1](https://user-images.githubusercontent.com/80044182/121953568-659bce00-cd66-11eb-8091-3d3a8f54a1a5.png)
+
 С учетом выходных данных, поступающих с коммутаторов, ответьте на следующие вопросы.  
 Какой коммутатор является корневым мостом?   
 _S1_____________  
@@ -289,6 +290,7 @@ _Есть лучший маршрут до корневого коммутато
 ### Часть 3:	Наблюдение за процессом выбора протоколом STP порта, исходя из стоимости портов
 #### Шаг 1:	Определите коммутатор с заблокированным портом.
 При текущей конфигурации только один коммутатор может содержать заблокированный протоколом STP порт. Выполните команду show spanning-tree на обоих коммутаторах некорневого моста.   
+**S2**  
 S2#sh spanning-tree     
 VLAN0001  
 Spanning tree enabled protocol ieee   
@@ -307,7 +309,7 @@ Interface Role Sts Cost Prio.Nbr Type
 ---------------- ---- --- --------- -------- --------------------------------
 Fa0/2 Root FWD 19 128.2 P2p  
 Fa0/4 Altn BLK 19 128.4 P2p  
-
+**S3**
 S3#sh spanning-tree  
 VLAN0001  
 Spanning tree enabled protocol ieee  
@@ -334,7 +336,7 @@ S2(config)# interface f0/4
 S2(config-if)# spanning-tree cost 18  
 #### Шаг 3:	Просмотрите изменения протокола spanning-tree.  
 Повторно выполните команду show spanning-tree на обоих коммутаторах некорневого моста.
-**S2**
+**S2**  
 S2#sh spanning-tree   
 VLAN0001  
 Spanning tree enabled protocol ieee   
@@ -401,7 +403,7 @@ Fa0/4 Altn BLK 19 128.4 P2p
 ### Часть 4:	Наблюдение за процессом выбора протоколом STP порта, исходя из приоритета портов
 a.	Включите порты F0/1 и F0/3 на всех коммутаторах.  
 b.	Подождите 30 секунд, чтобы протокол STP завершил процесс перевода порта, после чего выполните команду show spanning-tree на коммутаторах некорневого моста.   Обратите внимание, что порт корневого моста переместился на порт с меньшим номером, связанный с коммутатором корневого моста, и заблокировал предыдущий порт корневого моста.  
-**S2**
+**S2**  
 S2(config)#int f0/1  
 S2(config-if)#no sh  
 %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to down  
@@ -431,7 +433,7 @@ Fa0/1            Root FWD 19        128.1    P2p
 Fa0/2            Altn BLK 19        128.2    P2p  
 Fa0/3            Altn BLK 19        128.3    P2p  
 Fa0/4            Altn BLK 19        128.4    P2p  
-**S3**
+**S3**  
 S3(config)#int f0/1  
 S3(config-if)#no sh  
 %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to down  
