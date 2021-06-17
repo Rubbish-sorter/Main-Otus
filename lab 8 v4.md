@@ -64,6 +64,7 @@ f.	Зашифруйте открытые пароли.
 g.	Создайте баннер с предупреждением о запрете несанкционированного доступа к устройству.  
 h.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.  
 i.	Установите часы на маршрутизаторе на сегодняшнее время и дату.  
+**R1**
 Router>en  
 Router# clock set 20:00:00 10 Jun 2021  
 Router#conf t  
@@ -72,7 +73,7 @@ Router(config)#hostname R1
 R1(config)#no ip domain-lookup  
 R1(config)#ser pass  
 R1(config)#banner motd #Unauthorized access is strictly prohibited!#  
-R1(config)#enable secret class  
+R1(config)#enable secret class    
 R1(config)#line con 0  
 R1(config-line)#pass cisco  
 R1(config-line)#login  
@@ -80,14 +81,32 @@ R1(config-line)#logging-sync
 R1(config-line)#line vty 0 4  
 R1(config-line)#pass cisco   
 R1(config-line)#login   
-R1(config-line)#exit  
+R1(config-line)#exit
+**R2**
+Router>en  
+Router# clock set 20:03:00 10 Jun 2021  
+Router#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.    
+Router(config)#hostname R2    
+R2(config)#no ip domain-lookup    
+R2(config)#ser pass  
+R2(config)#banner motd #Unauthorized access is strictly prohibited!#    
+R2(config)#enable secret class     
+R2(config)#line con 0   
+R2(config-line)#pass cisco  
+R2(config-line)#login   
+R2(config-line)#logging-sync   
+R2(config-line)#line vty 0 4   
+R2(config-line)#pass cisco    
+R2(config-line)#login    
+R2(config-line)#exit   
 #### Шаг 4. Настройка маршрутизации между сетями VLAN на маршрутизаторе R1
 a.	Активируйте интерфейс G0/0/1 на маршрутизаторе.    
 b.	Настройте подинтерфейсы для каждой VLAN в соответствии с требованиями таблицы IP-адресации. Все субинтерфейсы используют инкапсуляцию 802.1Q и назначаются первый полезный адрес из вычисленного пула IP-адресов. Убедитесь, что подинтерфейсу для native VLAN не назначен IP-адрес. Включите описание для каждого подинтерфейса.  
 c.	Убедитесь, что вспомогательные интерфейсы работают.  
 R1(config-if)#int g0/0/1  
-R2(config-if)#no sh  
-R2(config-if)#  
+R1(config-if)#no sh  
+R1(config-if)#  
 %LINK-5-CHANGED: Interface GigabitEthernet0/0/1, changed state to up  
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0/1, changed state to up  
@@ -120,13 +139,100 @@ c.	Настройте маршрут по умолчанию на каждом �
 d.	Убедитесь, что статическая маршрутизация работает с помощью пинга до адреса G0/0/1 R2 от R1.  
 e.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.  
 **R1**
-R1(config-if)#ip addr 10.0.0.1 255.255.255.252
-R1(config-if)#no sh
-R1(config-if)#
-%LINK-5-CHANGED: Interface GigabitEthernet0/0/0, changed state to up
-R1(config-if)#exit
-R1(config)#ip route 0.0.0.0 0.0.0.0 10.0.0.2
-R1(config)#copy run start
-Building configuration...
-[OK]
-**R2**
+R1(config)#int g0/0/0
+R1(config-if)#ip addr 10.0.0.1 255.255.255.252   
+R1(config-if)#no sh  
+R1(config-if)#  
+%LINK-5-CHANGED: Interface GigabitEthernet0/0/0, changed state to up  
+R1(config-if)#exit  
+R1(config)#ip route 0.0.0.0 0.0.0.0 10.0.0.2  
+R1(config)#copy run start  
+Building configuration...  
+[OK]  
+**R2**   
+R2(config)#int g0/0/0  
+R2(config-if)#ip addr 10.0.0.2 255.255.255.252  
+R2(config-if)#no sh  
+R2(config-if)#  
+%LINK-5-CHANGED: Interface GigabitEthernet0/0/0, changed state to up  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0/0, changed state to up  
+
+R2(config-if)#int g0/0/1  
+R2(config-if)#ip addr 192.168.1.97 255.255.255.240  
+R2(config-if)#no sh    
+R2(config-if)#  
+%LINK-5-CHANGED: Interface GigabitEthernet0/0/1, changed state to up  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0/1, changed state to up  
+
+R2(config-if)#exit 
+R2(config)#ip route 0.0.0.0 0.0.0.0 10.0.0.1  
+R2(config)#do copy run start  
+Destination filename [startup-config]?   
+Building configuration...  
+[OK]  
+#### Шаг 6. Настройте базовые параметры каждого коммутатора.  
+a.	Присвойте коммутатору имя устройства.  
+Откройте окно конфигурации  
+b.	Отключите поиск DNS, чтобы предотвратить попытки маршрутизатора неверно преобразовывать введенные команды таким образом, как будто они являются именами узлов.  
+c.	Назначьте class в качестве зашифрованного пароля привилегированного режима EXEC.  
+d.	Назначьте cisco в качестве пароля консоли и включите вход в систему по паролю.  
+e.	Назначьте cisco в качестве пароля VTY и включите вход в систему по паролю.  
+f.	Зашифруйте открытые пароли.  
+g.	Создайте баннер с предупреждением о запрете несанкционированного доступа к устройству.  
+h.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.  
+i.	Установите часы на сегодняшнее время и дату.  
+j.	Скопируйте текущую конфигурацию в файл загрузочной конфигурации    
+**S1**  
+Switch>en  
+Switch#clock set 20:10:00 10 Jun 2021   
+Switch#conf t    
+Enter configuration commands, one per line. End with CNTL/Z.    
+Switch(config)#hostname S1    
+S1(config)#no ip domain-lookup   
+S1(config)#banner motd #Unaithorized accesss is strictly prohibited!#  
+S1(config)#ser pass    
+S1(config)#enable secret class   
+S1(config)#line con 0   
+S1(config-line)#logging sync   
+S1(config-line)#pass cisco     
+S1(config-line)#login  
+S1(config-line)#line vty 0 4  
+S1(config-line)#pass cisco    
+S1(config-line)#login    
+S1(config-line)#exit   
+S1(config)#do copy run start  
+Destination filename [startup-config]?   
+Building configuration...  
+[OK]  
+**S2**  
+Switch>en  
+Switch#clock set 20:20:00 10 Jun 2021   
+Switch#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Switch(config)#hostname S1  
+S2(config)#no ip domain-lookup  
+S2(config)#banner motd #Unaithorized accesss is strictly prohibited!#  
+S2(config)#ser pass  
+S2(config)#enable secret class  
+S2(config)#line con 0  
+S2(config-line)#logging sync  
+S2(config-line)#pass cisco  
+S2(config-line)#login  
+S2(config-line)#line vty 0 4  
+S2(config-line)#pass cisco  
+S2(config-line)#login  
+S2(config-line)#exit  
+S2(config)#do copy run start  
+Destination filename [startup-config]?   
+Building configuration...  
+[OK] 
+Шаг 7. Создайте сети VLAN на коммутаторе S1.
+Примечание. S2 настроен только с базовыми настройками. 
+a.	Создайте необходимые VLAN на коммутаторе 1 и присвойте им имена из приведенной выше таблицы.
+b.	Настройте и активируйте интерфейс управления на S1 (VLAN 200), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того установите шлюз по умолчанию на S1.
+c.	Настройте и активируйте интерфейс управления на S2 (VLAN 1), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того, установите шлюз по умолчанию на S2
+d.	Назначьте все неиспользуемые порты S1 VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их. На S2 административно деактивируйте все неиспользуемые порты.
+
+
