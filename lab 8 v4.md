@@ -232,8 +232,8 @@ Building configuration...
 a.	Создайте необходимые VLAN на коммутаторе 1 и присвойте им имена из приведенной выше таблицы.  
 b.	Настройте и активируйте интерфейс управления на S1 (VLAN 200), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того установите шлюз по умолчанию на S1.    
 c.	Настройте и активируйте интерфейс управления на S2 (VLAN 1), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того, установите шлюз по умолчанию на S2    
-d.	Назначьте все неиспользуемые порты S1 VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их. На S2 административно деактивируйте все неиспользуемые порты. 
-**S1**
+d.	Назначьте все неиспользуемые порты S1 VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их. На S2 административно деактивируйте все неиспользуемые порты.   
+**S1**  
 S1(config)#vlan 100  
 S1(config-vlan)#name Clients  
 S1(config-vlan)#vlan 200 
@@ -247,13 +247,13 @@ S1(config-if-range)#sw mode access
 S1(config-if-range)#sw acc vlan 999  
 S1(config-if-range)#sh  
 %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down  
-*****
+- - - - -  
 S1(config-if-range)#int range f0/7-24  
 S1(config-if-range)#sw mode access   
 S1(config-if-range)#sw acc vlan 999  
 S1(config-if-range)#sh  
 %LINK-5-CHANGED: Interface FastEthernet0/7, changed state to administratively down  
-*****
+- - - - -  
 S1(config-if-range)#int range g0/1-2  
 S1(config-if-range)#sw mode access   
 S1(config-if-range)#sw acc vlan 999  
@@ -274,18 +274,18 @@ S2(config-if-range)#int range f0/1-4
 S2(config-if-range)#sh  
 
 %LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down 
-****
+- - - - -
 S2(config-if-range)#int range f0/6-17
 S2(config-if-range)#sh
 
 %LINK-5-CHANGED: Interface FastEthernet0/6, changed state to administratively down
-****
+- - - - -  
 S2(config-if-range)#
 S2(config-if-range)#int range f0/19-24
 S(config-if-range)#sh
 
 %LINK-5-CHANGED: Interface FastEthernet0/19, changed state to administratively down
-******
+- - - - -  
 Шаг 8. Назначьте сети VLAN соответствующим интерфейсам коммутатора.
 a.	Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
 Откройте окно конфигурации
@@ -293,24 +293,72 @@ b.	Убедитесь, что VLAN назначены на правильные 
 Вопрос:
 Почему интерфейс F0/5 указан в VLAN 1?
 **Ответ:** на данный интерфейс S2 назначен vlan 1 по умолчанию, других vlan там нет.
+S1(config)#int f0/6 
+S1(config-if)#sw mode access
+S1(config-if)#sw acc vlan 100
+S1(config-if)#exit
+S1(config)#do sh vlan  
+
+VLAN Name                             Status    Ports  
+---- -------------------------------- --------- -------------------------------  
+1    default                          active      
+100  Clients                          active    Fa0/6  
+200  Management                       active    
+999  Parking_lot                      active    Fa0/1, Fa0/2, Fa0/3, Fa0/4  
+                                                Fa0/7, Fa0/8, Fa0/9, Fa0/10  
+                                                Fa0/11, Fa0/12, Fa0/13, Fa0/14  
+                                                Fa0/15, Fa0/16, Fa0/17, Fa0/18    
+                                                Fa0/19, Fa0/20, Fa0/21, Fa0/22  
+                                                Fa0/23, Fa0/24, Gig0/1, Gig0/2  
+1000 Native                           active      
+1002 fddi-default                     active      
+1003 token-ring-default               active     
+1004 fddinet-default                  active    
+1005 trnet-default                    active      
 
 Шаг 9. Вручную настройте интерфейс S1 F0/5 в качестве транка 802.1Q.
 a.	Измените режим порта коммутатора, чтобы принудительно создать магистральный канал.
 b.	В рамках конфигурации транка  установите для native  VLAN значение 1000.
 c.	В качестве другой части конфигурации магистрали укажите, что VLAN 100, 200 и 1000 могут проходить по транку.
 d.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.
-S1(config)#int f0/5
-S1(config-if)#sw mode tr
-S1(config-if)#sw tr allowed vlan 1,100,200,1000
-S1(config-if)#sw tr native vlan 1000
-S1(config-if)#exit
-S1(config)# do copy run start
-Destination filename [startup-config]? 
-Building configuration...
-[OK]
+e.	Проверьте состояние транка.  
+**Вопрос:**  
+Какой IP-адрес был бы у ПК, если бы он был подключен к сети с помощью DHCP?  
+**Ответ:** с учетом исключения первых 5 адресов из пула PC-A будет иметь адрес 192.168.1.6
+S1(config)#int f0/5  
+S1(config-if)#sw mode tr  
+S1(config-if)#sw tr allowed vlan 100, 200, 1000  
+S1(config-if)#sw tr native vlan 1000  
+S1(config-if)#exit  
+S1(config)# do copy run start  
+Destination filename [startup-config]?   
+Building configuration...  
+[OK]   
+S1(config)#do sh int f0/5 sw  
+Name: Fa0/5  
+Switchport: Enabled  
+Administrative Mode: trunk  
+Operational Mode: trunk  
+Administrative Trunking Encapsulation: dot1q  
+Operational Trunking Encapsulation: dot1q  
+Negotiation of Trunking: On  
+Access Mode VLAN: 1 (default)  
+Trunking Native Mode VLAN: 1000 (Native)   
+Voice VLAN: none  
+Administrative private-vlan host-association: none  
+Administrative private-vlan mapping: none  
+Administrative private-vlan trunk native VLAN: none  
+Administrative private-vlan trunk encapsulation: dot1q  
+Administrative private-vlan trunk normal VLANs: none  
+Administrative private-vlan trunk private VLANs: none  
+Operational private-vlan: none  
+Trunking VLANs Enabled: 1,100,200,1000  
+Pruning VLANs Enabled: 2-1001  
+Capture Mode Disabled  
+Capture VLANs Allowed: ALL  
+Protected: false   
+Unknown unicast blocked: disabled  
+Unknown multicast blocked: disabled  
+Appliance trust: none  
 
-S1(config)#int f0/5
-S1(config-if)#sw mode tr
-S1(config-if)#sw tr allowed vlan 1,100,200,1000
-S1(config-if)#sw tr native vlan 1000
 
