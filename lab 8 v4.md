@@ -40,17 +40,17 @@
 ## Инструкции
 ### Часть 1. Создание сети и настройка основных параметров устройства
 В первой части лабораторной работы вам предстоит создать топологию сети и настроить базовые параметры для узлов ПК и коммутаторов.
-#### Шаг 1. Создание схемы адресации
+#### Шаг 1. Создание схемы адресации  
 Подсеть сети 192.168.1.0/24 в соответствии со следующими требованиями: 
-a.	Одна подсеть «Подсеть A», поддерживающая 58 хостов (клиентская VLAN на R1). 
-Подсеть A 
-Запишите первый IP-адрес в таблице адресации для R1 G0/0/1.100. Запишите второй IP-адрес в таблице адресов для S1 VLAN 200 и введите соответствующий шлюз по умолчанию. 
-b.	Одна подсеть «Подсеть B», поддерживающая 28 хостов (управляющая VLAN на R1).  
-Подсеть B:  
-Запишите первый IP-адрес в таблице адресации для R1 G0/0/1.200. Запишите второй IP-адрес в таблице адресов для S1 VLAN 1 и введите соответствующий шлюз по умолчанию.    
-c.	Одна подсеть «Подсеть C», поддерживающая 12 узлов (клиентская сеть на R2).  
-Подсеть C:  
-Запишите первый IP-адрес в таблице адресации для R2 G0 /0/1.  
+a.	Одна подсеть «Подсеть A», поддерживающая 58 хостов (клиентская VLAN на R1).   
+Подсеть A     
+Запишите первый IP-адрес в таблице адресации для R1 G0/0/1.100. Запишите второй IP-адрес в таблице адресов для S1 VLAN 200 и введите соответствующий шлюз по умолчанию.     
+b.	Одна подсеть «Подсеть B», поддерживающая 28 хостов (управляющая VLAN на R1).    
+Подсеть B:    
+Запишите первый IP-адрес в таблице адресации для R1 G0/0/1.200. Запишите второй IP-адрес в таблице адресов для S1 VLAN 1 и введите соответствующий шлюз по умолчанию.      
+c.	Одна подсеть «Подсеть C», поддерживающая 12 узлов (клиентская сеть на R2).    
+Подсеть C:    
+Запишите первый IP-адрес в таблице адресации для R2 G0 /0/1.    
 #### Шаг 2. Создайте сеть согласно топологии.  
 Подключите устройства, как показано в топологии, и подсоедините необходимые кабели.    
 #### Шаг 3. Произведите базовую настройку маршрутизаторов.  
@@ -228,11 +228,89 @@ S2(config)#do copy run start
 Destination filename [startup-config]?   
 Building configuration...  
 [OK] 
-Шаг 7. Создайте сети VLAN на коммутаторе S1.
-Примечание. S2 настроен только с базовыми настройками. 
-a.	Создайте необходимые VLAN на коммутаторе 1 и присвойте им имена из приведенной выше таблицы.
-b.	Настройте и активируйте интерфейс управления на S1 (VLAN 200), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того установите шлюз по умолчанию на S1.
-c.	Настройте и активируйте интерфейс управления на S2 (VLAN 1), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того, установите шлюз по умолчанию на S2
-d.	Назначьте все неиспользуемые порты S1 VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их. На S2 административно деактивируйте все неиспользуемые порты.
+Шаг 7. Создайте сети VLAN на коммутаторе S1.  
+a.	Создайте необходимые VLAN на коммутаторе 1 и присвойте им имена из приведенной выше таблицы.  
+b.	Настройте и активируйте интерфейс управления на S1 (VLAN 200), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того установите шлюз по умолчанию на S1.    
+c.	Настройте и активируйте интерфейс управления на S2 (VLAN 1), используя второй IP-адрес из подсети, рассчитанный ранее. Кроме того, установите шлюз по умолчанию на S2    
+d.	Назначьте все неиспользуемые порты S1 VLAN Parking_Lot, настройте их для статического режима доступа и административно деактивируйте их. На S2 административно деактивируйте все неиспользуемые порты. 
+**S1**
+S1(config)#vlan 100  
+S1(config-vlan)#name Clients  
+S1(config-vlan)#vlan 200 
+S1(config-vlan)#name Management  
+S1(config-vlan)#vlan 1000  
+S1(config-vlan)#name Native  
+S1(config-vlan)#vlan 999  
+S1(config-vlan)#name Parking_lot  
+S1(config-vlan)#int range f0/1-4  
+S1(config-if-range)#sw mode access   
+S1(config-if-range)#sw acc vlan 999  
+S1(config-if-range)#sh  
+%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down  
+*****
+S1(config-if-range)#int range f0/7-24  
+S1(config-if-range)#sw mode access   
+S1(config-if-range)#sw acc vlan 999  
+S1(config-if-range)#sh  
+%LINK-5-CHANGED: Interface FastEthernet0/7, changed state to administratively down  
+*****
+S1(config-if-range)#int range g0/1-2  
+S1(config-if-range)#sw mode access   
+S1(config-if-range)#sw acc vlan 999  
+S1(config-if-range)#sh     
 
+%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to administratively down  
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down  
+S1(config-if-range)#exit   
+**S2**  
+S2(config)#int range g0/1-2  
+S2(config-if-range)#sh  
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to administratively down
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down  
+S2(config-if-range)#int range f0/1-4  
+S2(config-if-range)#sh  
+
+%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down 
+****
+S2(config-if-range)#int range f0/6-17
+S2(config-if-range)#sh
+
+%LINK-5-CHANGED: Interface FastEthernet0/6, changed state to administratively down
+****
+S2(config-if-range)#
+S2(config-if-range)#int range f0/19-24
+S(config-if-range)#sh
+
+%LINK-5-CHANGED: Interface FastEthernet0/19, changed state to administratively down
+******
+Шаг 8. Назначьте сети VLAN соответствующим интерфейсам коммутатора.
+a.	Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.
+Откройте окно конфигурации
+b.	Убедитесь, что VLAN назначены на правильные интерфейсы.
+Вопрос:
+Почему интерфейс F0/5 указан в VLAN 1?
+**Ответ:** на данный интерфейс S2 назначен vlan 1 по умолчанию, других vlan там нет.
+
+Шаг 9. Вручную настройте интерфейс S1 F0/5 в качестве транка 802.1Q.
+a.	Измените режим порта коммутатора, чтобы принудительно создать магистральный канал.
+b.	В рамках конфигурации транка  установите для native  VLAN значение 1000.
+c.	В качестве другой части конфигурации магистрали укажите, что VLAN 100, 200 и 1000 могут проходить по транку.
+d.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.
+S1(config)#int f0/5
+S1(config-if)#sw mode tr
+S1(config-if)#sw tr allowed vlan 1,100,200,1000
+S1(config-if)#sw tr native vlan 1000
+S1(config-if)#exit
+S1(config)# do copy run start
+Destination filename [startup-config]? 
+Building configuration...
+[OK]
+
+S1(config)#int f0/5
+S1(config-if)#sw mode tr
+S1(config-if)#sw tr allowed vlan 1,100,200,1000
+S1(config-if)#sw tr native vlan 1000
 
