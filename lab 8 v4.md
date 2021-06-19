@@ -138,10 +138,10 @@ b.	Настройте интерфейс G0/0/0 для каждого маршр
 c.	Настройте маршрут по умолчанию на каждом маршрутизаторе, указываемом на IP-адрес G0/0/0 на другом маршрутизаторе.  
 d.	Убедитесь, что статическая маршрутизация работает с помощью пинга до адреса G0/0/1 R2 от R1.  
 e.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.  
-**R1**
-R1(config)#int g0/0/0
-R1(config-if)#ip addr 10.0.0.1 255.255.255.252   
-R1(config-if)#no sh  
+**R1**  
+R1(config)#int g0/0/0  
+R1(config-if)#ip addr 10.0.0.1 255.255.255.252     
+R1(config-if)#no sh   
 R1(config-if)#  
 %LINK-5-CHANGED: Interface GigabitEthernet0/0/0, changed state to up  
 R1(config-if)#exit  
@@ -149,7 +149,7 @@ R1(config)#ip route 0.0.0.0 0.0.0.0 10.0.0.2
 R1(config)#copy run start  
 Building configuration...  
 [OK]  
-**R2**   
+**R2**     
 R2(config)#int g0/0/0  
 R2(config-if)#ip addr 10.0.0.2 255.255.255.252  
 R2(config-if)#no sh  
@@ -286,18 +286,18 @@ S(config-if-range)#sh
 
 %LINK-5-CHANGED: Interface FastEthernet0/19, changed state to administratively down
 - - - - -  
-#### Шаг 8. Назначьте сети VLAN соответствующим интерфейсам коммутатора.  
-a.	Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.  
-Откройте окно конфигурации  
-b.	Убедитесь, что VLAN назначены на правильные интерфейсы.  
-**Вопрос:**  
-Почему интерфейс F0/5 указан в VLAN 1?
-**Ответ:** на данный интерфейс S2 назначен vlan 1 по умолчанию, других vlan там нет.
-S1(config)#int f0/6 
-S1(config-if)#sw mode access
-S1(config-if)#sw acc vlan 100
-S1(config-if)#exit
-S1(config)#do sh vlan  
+#### Шаг 8. Назначьте сети VLAN соответствующим интерфейсам коммутатора.    
+a.	Назначьте используемые порты соответствующей VLAN (указанной в таблице VLAN выше) и настройте их для режима статического доступа.    
+Откройте окно конфигурации    
+b.	Убедитесь, что VLAN назначены на правильные интерфейсы.    
+**Вопрос:**    
+Почему интерфейс F0/5 указан в VLAN 1?  
+**Ответ:** на данный интерфейс S2 назначен vlan 1 по умолчанию, других vlan там нет.  
+S1(config)#int f0/6   
+S1(config-if)#sw mode access  
+S1(config-if)#sw acc vlan 100  
+S1(config-if)#exit  
+S1(config)#do sh vlan    
 
 VLAN Name                             Status    Ports  
 ---- -------------------------------- --------- -------------------------------  
@@ -454,27 +454,27 @@ Approximate round trip times in milli-seconds:
     Minimum = 0ms, Maximum = 0ms, Average = 0ms  
 
 ### Часть 3. Настройка и проверка DHCP-ретрансляции на R2
-В части 3 настраивается R2 для ретрансляции DHCP-запросов из локальной сети на интерфейсе G0/0/1 на DHCP-сервер (R1). 
+В части 3 настраивается R2 для ретрансляции DHCP-запросов из локальной сети на интерфейсе G0/0/1 на DHCP-сервер (R1).   
 #### Шаг 1. Настройка R2 в качестве агента DHCP-ретрансляции для локальной сети на G0/0/1
-a.	Настройте команду ip helper-address на G0/0/1, указав IP-адрес G0/0/0 R1.
-b.	Сохраните конфигурацию.  
-R2(config)#int g0/0/1
-R2(config-if)#ip helper-address 10.0.0.1
-R2(config-if)ex
-R2(config)do copy run start  
-Destination filename [startup-config]?   
-Building configuration...  
-[OK]  
+a.	Настройте команду ip helper-address на G0/0/1, указав IP-адрес G0/0/0 R1.  
+b.	Сохраните конфигурацию.     
+R2(config)#int g0/0/1   
+R2(config-if)#ip helper-address 10.0.0.1  
+R2(config-if)ex  
+R2(config)do copy run start    
+Destination filename [startup-config]?    
+Building configuration...    
+[OK]    
 #### Шаг 2. Попытка получить IP-адрес от DHCP на PC-B
-a.	Из командной строки компьютера PC-B выполните команду ipconfig /all.
-b.	После завершения процесса обновления выполните команду ipconfig для просмотра новой информации об IP-адресе.
-c.	Проверьте подключение с помощью пинга IP-адреса интерфейса R1 G0/0/1.
-d.	Выполните show ip dhcp binding для R1 для проверки назначений адресов в DHCP.
-e.	Выполните команду show ip dhcp server statistics для проверки сообщений DHCP.
+a.	Из командной строки компьютера PC-B выполните команду ipconfig /all.  
+b.	После завершения процесса обновления выполните команду ipconfig для просмотра новой информации об IP-адресе.  
+c.	Проверьте подключение с помощью пинга IP-адреса интерфейса R1 G0/0/1.  
+d.	Выполните show ip dhcp binding для R1 для проверки назначений адресов в DHCP.  
+e.	Выполните команду show ip dhcp server statistics для проверки сообщений DHCP.  
 
 C:\>ipconfig /all  
 
-FastEthernet0 Connection:(default port)  
+FastEthernet0 Connection:(default port)   
 
    Connection-specific DNS Suffix..: CCNA-lab.com  
    Physical Address................: 0050.0FD8.E83D  
@@ -503,9 +503,35 @@ Ping statistics for 192.168.1.96:
 Approximate round trip times in milli-seconds:  
     Minimum = 0ms, Maximum = 0ms, Average = 0ms                                      
                                      
-R1(config)#do sh ip dhcp pool  
+R1(config)#do sh ip dhcp pool    
 
-Pool R1_Client_LAN :  
+Pool R1_Client_LAN :    
+ Utilization mark (high/low)    : 100 / 0    
+ Subnet size (first/next)       : 0 / 0    
+ Total addresses                : 62   
+ Leased addresses               : 1    
+ Excluded addresses             : 3   
+ Pending event                  : none   
+
+ 1 subnet is currently in the pool  
+ Current index        IP address range                    Leased/Excluded/Total    
+ 192.168.1.1          192.168.1.1      - 192.168.1.62      1    / 3     / 62    
+
+Pool R2_Client_LAN :    
+ Utilization mark (high/low)    : 100 / 0    
+ Subnet size (first/next)       : 0 / 0     
+ Total addresses                : 30    
+ Leased addresses               : 1    
+ Excluded addresses             : 3    
+ Pending event                  : none    
+
+ 1 subnet is currently in the pool    
+ Current index        IP address range                    Leased/Excluded/Total    
+ 192.168.1.97         192.168.1.97     - 192.168.1.126     1    / 3     / 30    
+
+
+
+Pool R1_Client_LAN :   
  Utilization mark (high/low)    : 100 / 0  
  Subnet size (first/next)       : 0 / 0   
  Total addresses                : 62  
@@ -522,38 +548,12 @@ Pool R2_Client_LAN :
  Subnet size (first/next)       : 0 / 0   
  Total addresses                : 30  
  Leased addresses               : 1  
- Excluded addresses             : 3  
+ Excluded addresses             : 3   
  Pending event                  : none  
 
  1 subnet is currently in the pool  
  Current index        IP address range                    Leased/Excluded/Total  
  192.168.1.97         192.168.1.97     - 192.168.1.126     1    / 3     / 30  
 
-
-
-Pool R1_Client_LAN :
- Utilization mark (high/low)    : 100 / 0
- Subnet size (first/next)       : 0 / 0 
- Total addresses                : 62
- Leased addresses               : 1
- Excluded addresses             : 3
- Pending event                  : none
-
- 1 subnet is currently in the pool
- Current index        IP address range                    Leased/Excluded/Total
- 192.168.1.1          192.168.1.1      - 192.168.1.62      1    / 3     / 62
-
-Pool R2_Client_LAN :
- Utilization mark (high/low)    : 100 / 0
- Subnet size (first/next)       : 0 / 0 
- Total addresses                : 30
- Leased addresses               : 1
- Excluded addresses             : 3
- Pending event                  : none
-
- 1 subnet is currently in the pool
- Current index        IP address range                    Leased/Excluded/Total
- 192.168.1.97         192.168.1.97     - 192.168.1.126     1    / 3     / 30
-
- Команда show ip dhcp server statistics не работает в Packet Tracer.  
+ Команда show ip dhcp server statistics не работает в Packet Tracer.    
 
