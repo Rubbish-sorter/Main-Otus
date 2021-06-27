@@ -96,4 +96,22 @@ a.	Настройте имя хоста для коммутаторов S1 и S2
 b.	Запретите нежелательный поиск в DNS.    
 c.	Настройте описания интерфейса для портов, которые используются в S1 и S2.    
 d.	Установите для шлюза по умолчанию для VLAN управления значение 192.168.10.1 на обоих коммутаторах.    
-**S1**
+**S1**  
+Switch>en  
+Switch#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Switch(config)#hostname S1  
+S1(config)#no ip domain lookup  
+S1(config)#line con 0  
+S1(config-line)#logging sync  
+S1(config-line)#exit  
+**S2**  
+Switch>en  
+Switch#conf t   
+Enter configuration commands, one per line. End with CNTL/Z.  
+Switch(config)#hostname S2  
+S2(config)#no ip domain lookup  
+S2(config)#line con 0    
+S2(config-line)#logging sync    
+S2(config-line)#exit  
+Настройка основно шлюза для VLAN управления везде перенесена далее.  
