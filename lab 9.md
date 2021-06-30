@@ -1,7 +1,8 @@
 # Лабораторная работа - Конфигурация безопасности коммутатора 
 
 ##Топология
- 
+![lab 9](https://user-images.githubusercontent.com/80044182/123926562-a9145000-d994-11eb-8552-b851c80f7fe4.png)
+
 ##Таблица адресации
 |Устройство	|interface |IP-адрес	|Маска подсети |
 |--|------|---|----|
@@ -114,7 +115,7 @@ S2(config)#no ip domain lookup
 S2(config)#line con 0    
 S2(config-line)#logging sync    
 S2(config-line)#exit  
-Настройка основно шлюза для VLAN управления везде перенесена далее.  
+Настройка основно шлюза для VLAN управления и описания используемых интерфейсов везде перенесены далее.  
 ### Часть 2. Настройка сетей VLAN на коммутаторах.
 #### Шаг 1. Сконфигруриуйте VLAN 10.
 Добавьте VLAN 10 на S1 и S2 и назовите VLAN - Management.
@@ -122,3 +123,112 @@ S2(config-line)#exit
 #### Настройте IP-адрес в соответствии с таблицей адресации для SVI для VLAN 10 на S1 и S2. Включите интерфейсы SVI и предоставьте описание для интерфейса.
 #### Шаг 3. Настройте VLAN 333 с именем Native на S1 и S2.
 #### Шаг 4. Настройте VLAN 999 с именем ParkingLot на S1 и S2.
+**S1**  
+S1(config)#vlan 10   
+S1(config-vlan)#name Management   
+S1(config-vlan)#vlan 333  
+S1(config-vlan)#name Native   
+S1(config-vlan)#vlan 999  
+S1(config-vlan)#name Parking_lot      
+S1(config-vlan)#int int vlan 10    
+S1(config-if)#    
+%LINK-5-CHANGED: Interface Vlan10, changed state to up    
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up  
+
+S1(config-if)#ip addr 192.168.10.201   
+S1(config-if)#ip addr 192.168.10.201 255.255.255.0  
+S1(config-if)#ip def 192.168.10.1    
+S1(config-if)#exit  
+**S2**
+S2(config)#vlan 10   
+S2(config-vlan)#name Management   
+S2(config-vlan)#vlan 333  
+S2(config-vlan)#name Native   
+S2(config-vlan)#vlan 999  
+S2(config-vlan)#name Parking_lot  
+S2(config-vlan)#int int vlan 10  
+S2(config-if)#  
+%LINK-5-CHANGED: Interface Vlan10, changed state to up    
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up  
+
+S2(config-if)#ip addr 192.168.10.201   
+S2(config-if)#ip addr 192.168.10.201 255.255.255.0 
+S2(config-if)#ip def 192.168.10.1
+S2(config-if)#exit  
+### Часть 3. Настройки безопасности коммутатора.
+#### Шаг 1. Релизация магистральных соединений 802.1Q.
+a.	Настройте все магистральные порты Fa0/1 на обоих коммутаторах для использования VLAN 333 в качестве native VLAN.  
+b.	Убедитесь, что режим транкинга успешно настроен на всех коммутаторах.  
+**S1**
+S1(config)#int f0/1  
+S1(config-if)#sw mode tr  
+S1(config-if)#sw tr native vlan 333  
+S1(config-if)#exit  
+S1(config)#do sh int tr  
+Port Mode Encapsulation Status Native vlan 
+Fa0/1 on 802.1q trunking 333  
+
+Port Vlans allowed on trunk  
+Fa0/1 1-1005  
+
+Port Vlans allowed and active in management domain  
+Fa0/1 1,10,333,999  
+
+Port Vlans in spanning tree forwarding state and not pruned  
+Fa0/1 1,10,333,999  
+**S2**
+S2(config)#int f0/1  
+S2(config-if)#sw mode tr  
+S2(config-if)#sw tr native vlan 333  
+S2(config-if)#exit  
+S2(config)#do sh int tr  
+Port Mode Encapsulation Status Native vlan 
+Fa0/1 on 802.1q trunking 333  
+
+Port Vlans allowed on trunk  
+Fa0/1 1-1005  
+
+Port Vlans allowed and active in management domain  
+Fa0/1 1,10,333,999  
+
+Port Vlans in spanning tree forwarding state and not pruned  
+Fa0/1 1,10,333,999  
+Шаг 2. Настройка портов доступа
+a.	На S1 настройте F0/5 и F0/6 в качестве портов доступа и свяжите их с VLAN 10.
+b.	На S2 настройте порт доступа Fa0/18 и свяжите его с VLAN 10.
+
+Шаг 3. Безопасность неиспользуемых портов коммутатора
+a.	На S1 и S2 переместите неиспользуемые порты из VLAN 1 в VLAN 999 и отключите неиспользуемые порты.
+b.	Убедитесь, что неиспользуемые порты отключены и связаны с VLAN 999, введя команду  show.
+S1(config)#int range f0/1-4  
+S1(config-if-range)#sw mode access   
+S1(config-if-range)#sw acc vlan 999  
+S1(config-if-range)#sh    
+  
+%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down    
+
+%LINK-5-CHANGED: Interface FastEthernet0/2, changed state to administratively down    
+
+%LINK-5-CHANGED: Interface FastEthernet0/3, changed state to administratively down    
+
+%LINK-5-CHANGED: Interface FastEthernet0/4, changed state to administratively down  
+S1(config-if-range)#int range f0/7-24    
+S1(config-if-range)#sw mode access     
+S1(config-if-range)#sw acc vlan 999    
+S1(config-if-range)#sh    
+
+%LINK-5-CHANGED: Interface FastEthernet0/7, changed state to administratively down  
+
+- - - - - -   
+
+S1(config-if-range)#int range g0/1-2   
+S1(config-if-range)#sw mode access   
+S1(config-if-range)#sw acc vlan 999  
+S1(config-if-range)#sh  
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to administratively down  
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down  
+S1(config-if-range)#exit  
