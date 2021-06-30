@@ -153,10 +153,10 @@ S2(config-if)#
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface Vlan10, changed state to up  
 
-S2(config-if)#ip addr 192.168.10.201   
-S2(config-if)#ip addr 192.168.10.201 255.255.255.0 
-S2(config-if)#ip def 192.168.10.1
-S2(config-if)#exit  
+S2(config-if)#ip addr 192.168.10.201       
+S2(config-if)#ip addr 192.168.10.201 255.255.255.0   
+S2(config-if)#ip def 192.168.10.1    
+S2(config-if)#exit   
 ### Часть 3. Настройки безопасности коммутатора.
 #### Шаг 1. Релизация магистральных соединений 802.1Q.
 a.	Настройте все магистральные порты Fa0/1 на обоих коммутаторах для использования VLAN 333 в качестве native VLAN.  
