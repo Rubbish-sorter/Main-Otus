@@ -453,12 +453,133 @@ Interface Trusted Rate limit (pps)
 FastEthernet0/1 yes unlimited   
 FastEthernet0/18 no 5  
 
-e.	В командной строке на PC-B освободите, а затем обновите IP-адрес.   
-C:\Users\Student> ipconfig /release  
-C:\Users\Student> ipconfig /renew    
+e.	В командной строке на PC-B освободите, а затем обновите IP-адрес.     
+C:\>ipconfig /release  
+
+IP Address......................: 0.0.0.0  
+Subnet Mask.....................: 0.0.0.0  
+Default Gateway.................: 0.0.0.0    
+DNS Server......................: 0.0.0.0   
+
+C:\>ipconfig /renew  
+
+IP Address......................: 192.168.10.11  
+Subnet Mask.....................: 255.255.255.0  
+Default Gateway.................: 192.168.10.1  
+DNS Server......................: 0.0.0.0   
 
 f.	Проверьте привязку отслеживания DHCP с помощью команды show ip dhcp snooping binding.  
+S2(config)#do sh ip dhcp sn bind    
+MacAddress IpAddress Lease(sec) Type VLAN Interface  
+------------------ --------------- ---------- ------------- ---- -----------------  
+00:0A:F3:A6:0D:11 192.168.10.11 86400 dhcp-snooping 10 FastEthernet0/18  
+Total number of bindings: 1  
 
+#### Шаг 6. Реализация PortFast и BPDU Guard    
+a.	Настройте PortFast на всех портах доступа, которые используются на обоих коммутаторах.    
+b.	Включите защиту BPDU на портах доступа VLAN 10 S1 и S2, подключенных к PC-A и PC-B.   
+c.	Убедитесь, что защита BPDU и PortFast включены на соответствующих портах.    
+**S1**
+S1(config)#int f0/5    
+S1(config-if)#span portfast    
+%Warning: portfast should only be enabled on ports connected to a single  
+host. Connecting hubs, concentrators, switches, bridges, etc... to this  
+interface when portfast is enabled, can cause temporary bridging loops.  
+Use with CAUTION   
+
+%Portfast has been configured on FastEthernet0/5 but will only  
+have effect when the interface is in a non-trunking mode.  
+
+S1(config-if)#spanning-tree bpduguard enable  
+S1(config-if)#int f0/6   
+S1(config-if)#span portfast  
+S1(config-if)#spanning-tree bpduguard enable  
+S1(config-if)#exit  
+S1(config)#do sh span int f0/6 det   
+Port 6 (FastEthernet0/6) of VLAN0010 is designated forwarding  
+Port path cost 19, Port priority 128, Port Identifier 128.6  
+Designated root has priority 32778, address 0001.6374.3480  
+Designated bridge has priority 32778, address 0060.2FCD.788B 
+Designated port id is 128.6, designated path cost 19  
+Timers: message age 16, forward delay 0, hold 0 
+Number of transitions to forwarding state: 1  
+The port is in the portfast mode  
+Link type is point-to-point by default  
+**S2**
+S2(config)#int f0/18    
+S2(config-if)#span portfast    
+%Warning: portfast should only be enabled on ports connected to a single  
+host. Connecting hubs, concentrators, switches, bridges, etc... to this  
+interface when portfast is enabled, can cause temporary bridging loops.  
+Use with CAUTION   
+
+%Portfast has been configured on FastEthernet0/5 but will only  
+have effect when the interface is in a non-trunking mode.  
+
+S2(config-if)#spanning-tree bpduguard enable 
+S2(config-if)#exit
+Шаг 7. Проверьте наличие сквозного ⁪подключения.
+Проверьте PING свзяь между всеми устройствами в таблице IP-адресации. В случае сбоя проверки связи может потребоваться отключить брандмауэр на хостах.
+C:\>ping 192.168.10.1  
+
+Pinging 192.168.10.1 with 32 bytes of data:  
+
+Reply from 192.168.10.1: bytes=32 time=10ms TTL=255  
+Reply from 192.168.10.1: bytes=32 time<1ms TTL=255  
+Reply from 192.168.10.1: bytes=32 time<1ms TTL=255  
+Reply from 192.168.10.1: bytes=32 time<1ms TTL=255  
+
+Ping statistics for 192.168.10.1:  
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 10ms, Average = 2ms  
+
+C:\>ping 192.168.10.201  
+
+Pinging 192.168.10.201 with 32 bytes of data:  
+
+Request timed out.  
+Reply from 192.168.10.201: bytes=32 time<1ms TTL=255  
+Reply from 192.168.10.201: bytes=32 time<1ms TTL=255  
+Reply from 192.168.10.201: bytes=32 time<1ms TTL=255 
+
+Ping statistics for 192.168.10.201: 
+Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 0ms, Average = 0ms  
+
+C:\>ping 192.168.10.202  
+
+Pinging 192.168.10.202 with 32 bytes of data:  
+
+Request timed out.  
+Reply from 192.168.10.202: bytes=32 time<1ms TTL=255  
+Reply from 192.168.10.202: bytes=32 time<1ms TTL=255  
+Reply from 192.168.10.202: bytes=32 time<1ms TTL=255  
+
+Ping statistics for 192.168.10.202:  
+Packets: Sent = 4, Received = 3, Lost = 1 (25% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 0ms, Average = 0ms  
+
+C:\>ping 192.168.10.11  
+
+Pinging 192.168.10.11 with 32 bytes of data:  
+
+Reply from 192.168.10.11: bytes=32 time<1ms TTL=128  
+Reply from 192.168.10.11: bytes=32 time<1ms TTL=128  
+Reply from 192.168.10.11: bytes=32 time<1ms TTL=128  
+Reply from 192.168.10.11: bytes=32 time<1ms TTL=128    
+
+Ping statistics for 192.168.10.11:  
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 0ms, Average = 0ms  
+
+**Вопросы для повторения:**
+1.	С точки зрения безопасности порта на S2, почему нет значения таймера для оставшегося возраста в минутах, когда было сконфигурировано динамическое обучение - sticky? Такого не было, ошибка.
+2.	Что касается безопасности порта на S2, если вы загружаете скрипт текущей конфигурации на S2, почему порту 18 на PC-B никогда не получит IP-адрес через DHCP? некорректный вопрос или не отключена опция 82
+3.	Что касается безопасности порта, в чем разница между типом абсолютного устаревания и типом устаревание по неактивности?
 
 
  
