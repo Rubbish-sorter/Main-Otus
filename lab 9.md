@@ -389,8 +389,75 @@ Vlan Mac Address Type Ports Remaining Age
 ---- ----------- ---- ----- -------------  
 10 0060.2F7D.3E09 DynamicConfigured FastEthernet0/6 -  
 ------------------------------------------------------------------------------   
-Total Addresses in System (excluding one mac per port) : 0  
+Total Addresses in System (excluding one mac per port) : 0    
 Max Addresses limit in System (excluding one mac per port) : 1024  
+d.	Включите безопасность порта для F0 / 18 на S2. Настройте каждый активный порт доступа таким образом, чтобы он автоматически добавлял адреса МАС,   изученные на этом порту, в текущую конфигурацию.  
+e.	Настройте следующие параметры безопасности порта на S2 F / 18:  
+-	Максимальное количество записей MAC-адресов: 2  
+-	Тип безопасности: Protect    
+-	Aging time: 60 мин.  
+S2(config)#int f0/18  
+S2(config-if)#sw port-sec  
+S2(config-if)#sw port-sec viol protect  
+S2(config-if)#sw port-sec ag time 60  
+S2(config-if)#exit  
+f.	Проверка функции безопасности портов на S2 F0/18.    
+S2(config)#do sh port-sec int f0/18  
+Port Security              : Enabled  
+Port Status                : Secure-up  
+Violation Mode             : Protect  
+Aging Time                 : 60 mins  
+Aging Type                 : Absolute  
+SecureStatic Address Aging : Disabled  
+Maximum MAC Addresses      : 1  
+Total MAC Addresses        : 1  
+Configured MAC Addresses   : 0  
+Sticky MAC Addresses       : 1  
+Last Source Address:Vlan   : 000A.F3A6.0D11:10  
+Security Violation Count   : 0  
+
+S2(config)#do sh port-sec addr  
+			Secure Mac Address Table  
+-------------------------------------------------------------------------------  
+Vlan	Mac Address	Type			Ports		Remaining Age  
+								(mins)
+----	-----------	----			-----		-------------  
+10	000A.F3A6.0D11	SecureSticky		FastEthernet0/18		-  
+------------------------------------------------------------------------------  
+Total Addresses in System (excluding one mac per port)     : 0  
+Max Addresses limit in System (excluding one mac per port) : 1024  
+#### Шаг 5. Реализовать безопасность DHCP snooping.  
+a.	На S2 включите DHCP snooping и настройте DHCP snooping во VLAN 10.  
+b.	Настройте магистральные порты на S2 как доверенные порты.  
+c.	Ограничьте ненадежный порт Fa0/18 на S2 пятью DHCP-пакетами в секунду.  
+d.	Проверка DHCP Snooping на S2.  
+S2(config)#ip dhcp sn  
+S2(config)#ip dhcp snooping vlan 10  
+S2(config)#no ip dhcp sn inf opt  
+S2(config)#int f0/1  
+S2(config-if)#ip dhcp sn trust  
+S2(config-if)#int f0/18  
+S2(config-if)#ex  
+S2(config)#int f0/18  
+S2(config-if)#ip dhcp snooping limit rate 5  
+S2(config-if)#exit  
+
+S2(config)#do sh ip dhcp sn  
+Switch DHCP snooping is enabled  
+DHCP snooping is configured on following VLANs: 1, 10  
+Insertion of option 82 is disabled  
+Option 82 on untrusted port is not allowed   
+Verification of hwaddr field is enabled  
+Interface Trusted Rate limit (pps)  
+----------------------- ------- ----------------  
+FastEthernet0/1 yes unlimited   
+FastEthernet0/18 no 5  
+
+e.	В командной строке на PC-B освободите, а затем обновите IP-адрес.   
+C:\Users\Student> ipconfig /release  
+C:\Users\Student> ipconfig /renew    
+
+f.	Проверьте привязку отслеживания DHCP с помощью команды show ip dhcp snooping binding.  
 
 
 
