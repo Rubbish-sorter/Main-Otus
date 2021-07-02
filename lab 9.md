@@ -198,17 +198,29 @@ Fa0/1 1,10,333,999
 Шаг 2. Настройка портов доступа  
 a.	На S1 настройте F0/5 и F0/6 в качестве портов доступа и свяжите их с VLAN 10.  
 b.	На S2 настройте порт доступа Fa0/18 и свяжите его с VLAN 10.  
-
+**S1**  
+S1(config)#int f0/5    
+S1(config-if)#sw mode access   
+S1(config-if)#sw acc vlan 10 
+S1(config-if)#description to R1  
+S1(config-if)#int f0/6   
+S1(config-if)#sw mode access    
+S1(config-if)#sw acc vlan 10   
+S1(config-if)#description to PC-A  
+**S2**
+S1(config)#int f0/18  
+S1(config-if)#sw mode access   
+S1(config-if)#sw acc vlan 10 
+S1(config-if)#description to PC-B
 Шаг 3. Безопасность неиспользуемых портов коммутатора  
-a.	На S1 и S2 переместите неиспользуемые порты из VLAN 1 в VLAN 999 и отключите неиспользуемые порты.    
-b.	Убедитесь, что неиспользуемые порты отключены и связаны с VLAN 999, введя команду  show.  
-S1(config)#int range f0/1-4  
-S1(config-if-range)#sw mode access   
+a.	На S1 и S2 переместите неиспользуемые порты из VLAN 1 в VLAN 999 и отключите неиспользуемые порты.      
+b.	Убедитесь, что неиспользуемые порты отключены и связаны с VLAN 999, введя команду  show.    
+**S1**    
+S1(config)#int range f0/2-4    
+S1(config-if-range)#sw mode access     
 S1(config-if-range)#sw acc vlan 999  
 S1(config-if-range)#sh    
   
-%LINK-5-CHANGED: Interface FastEthernet0/1, changed state to administratively down    
-
 %LINK-5-CHANGED: Interface FastEthernet0/2, changed state to administratively down    
 
 %LINK-5-CHANGED: Interface FastEthernet0/3, changed state to administratively down    
@@ -232,3 +244,110 @@ S1(config-if-range)#sh
 
 %LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down  
 S1(config-if-range)#exit  
+S1(config)#do sh int status
+Port Name Status Vlan Duplex Speed Type
+Fa0/1 connected 1 auto auto 10/100BaseTX  
+Fa0/2 disabled 999 auto auto 10/100BaseTX  
+Fa0/3 disabled 999 auto auto 10/100BaseTX  
+Fa0/4 disabled 999 auto auto 10/100BaseTX  
+Fa0/5 connected 10 auto auto 10/100BaseTX  
+Fa0/6 connected 10 auto auto 10/100BaseTX  
+Fa0/7 disabled 999 auto auto 10/100BaseTX  
+Fa0/8 disabled 999 auto auto 10/100BaseTX  
+Fa0/9 disabled 999 auto auto 10/100BaseTX  
+Fa0/10 disabled 999 auto auto 10/100BaseTX  
+Fa0/11 disabled 999 auto auto 10/100BaseTX  
+Fa0/12 disabled 999 auto auto 10/100BaseTX  
+Fa0/13 disabled 999 auto auto 10/100BaseTX  
+Fa0/14 disabled 999 auto auto 10/100BaseTX  
+Fa0/15 disabled 999 auto auto 10/100BaseTX  
+Fa0/16 disabled 999 auto auto 10/100BaseTX  
+Fa0/17 disabled 999 auto auto 10/100BaseTX  
+Fa0/18 disabled 999 auto auto 10/100BaseTX
+Fa0/19 disabled 999 auto auto 10/100BaseTX  
+Fa0/20 disabled 999 auto auto 10/100BaseTX  
+Fa0/21 disabled 999 auto auto 10/100BaseTX  
+Fa0/22 disabled 999 auto auto 10/100BaseTX  
+Fa0/23 disabled 999 auto auto 10/100BaseTX  
+Fa0/24 disabled 999 auto auto 10/100BaseTX  
+Gig0/1 disabled 999 auto auto 10/100BaseTX  
+Gig0/2 disabled 999 auto auto 10/100BaseTX  
+**S2**    
+S2(config)#int range f0/2-17    
+S2(config-if-range)#sw mode access     
+S2(config-if-range)#sw acc vlan 999  
+S2(config-if-range)#sh    
+  
+%LINK-5-CHANGED: Interface FastEthernet0/2, changed state to administratively down  
+
+--- --- --- --- 
+S2(config-if-range)#int range f0/19-24    
+S2(config-if-range)#sw mode access     
+S2(config-if-range)#sw acc vlan 999    
+S2(config-if-range)#sh    
+
+%LINK-5-CHANGED: Interface FastEthernet0/19, changed state to administratively down  
+
+- - - - - -   
+
+S2(config-if-range)#int range g0/1-2   
+S2(config-if-range)#sw mode access   
+S2(config-if-range)#sw acc vlan 999  
+S2(config-if-range)#sh  
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/1, changed state to administratively down  
+
+%LINK-5-CHANGED: Interface GigabitEthernet0/2, changed state to administratively down  
+S2(config-if-range)#exit  
+S2(config)#do sh int status  
+Port Name Status Vlan Duplex Speed Type  
+Fa0/1 connected 1 auto auto 10/100BaseTX  
+Fa0/2 disabled 999 auto auto 10/100BaseTX  
+Fa0/3 disabled 999 auto auto 10/100BaseTX  
+Fa0/4 disabled 999 auto auto 10/100BaseTX  
+Fa0/5 disabled 999 auto auto 10/100BaseTX  
+Fa0/6 disabled 999 auto auto 10/100BaseTX  
+Fa0/7 disabled 999 auto auto 10/100BaseTX  
+Fa0/8 disabled 999 auto auto 10/100BaseTX  
+Fa0/9 disabled 999 auto auto 10/100BaseTX  
+Fa0/10 disabled 999 auto auto 10/100BaseTX  
+Fa0/11 disabled 999 auto auto 10/100BaseTX  
+Fa0/12 disabled 999 auto auto 10/100BaseTX  
+Fa0/13 disabled 999 auto auto 10/100BaseTX  
+Fa0/14 disabled 999 auto auto 10/100BaseTX  
+Fa0/15 disabled 999 auto auto 10/100BaseTX  
+Fa0/16 disabled 999 auto auto 10/100BaseTX  
+Fa0/17 disabled 999 auto auto 10/100BaseTX  
+Fa0/18 connected 10 auto auto 10/100BaseTX  
+Fa0/19 disabled 999 auto auto 10/100BaseTX  
+Fa0/20 disabled 999 auto auto 10/100BaseTX  
+Fa0/21 disabled 999 auto auto 10/100BaseTX  
+Fa0/22 disabled 999 auto auto 10/100BaseTX  
+Fa0/23 disabled 999 auto auto 10/100BaseTX  
+Fa0/24 disabled 999 auto auto 10/100BaseTX  
+Gig0/1 disabled 999 auto auto 10/100BaseTX  
+Gig0/2 disabled 999 auto auto 10/100BaseTX  
+Шаг 4. Документирование и реализация функций безопасности порта.
+Интерфейсы F0/6 на S1 и F0/18 на S2 настроены как порты доступа. На этом шаге вы также настроите безопасность портов на этих двух портах доступа.
+a.	На S1, введите команду show port-security interface f0/6  для отображения настроек по умолчанию безопасности порта для интерфейса F0/6. Запишите свои ответы ниже.
+
+Конфигурация безопасности порта по умолчанию
+Функция	Настройка по умолчанию
+Защита портов	Отключено
+Максимальное количество записей MAC-адресов	1
+Режим проверки на нарушение безопасности	выключено
+Aging Time	0
+Aging Type	absolute
+Secure Static Address Aging	disabled
+Sticky MAC Address	0
+b.	На S1 включите защиту порта на F0 / 6 со следующими настройками:
+o	Максимальное количество записей MAC-адресов: 3
+o	Режим безопасности: restrict
+o	Aging time: 60 мин.
+o	Aging type: неактивный
+c.	Verify port security on S1 F0/6.
+S1# show port-security interface f0/6
+
+
+ 
+ 
