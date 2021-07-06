@@ -516,11 +516,11 @@ Use with CAUTION
 %Portfast has been configured on FastEthernet0/5 but will only  
 have effect when the interface is in a non-trunking mode.  
 
-S2(config-if)#spanning-tree bpduguard enable 
-S2(config-if)#exit
-Шаг 7. Проверьте наличие сквозного ⁪подключения.
-Проверьте PING свзяь между всеми устройствами в таблице IP-адресации. В случае сбоя проверки связи может потребоваться отключить брандмауэр на хостах.
-C:\>ping 192.168.10.1  
+S2(config-if)#spanning-tree bpduguard enable    
+S2(config-if)#exit   
+#### Шаг 7. Проверьте наличие сквозного ⁪подключения.  
+Проверьте PING свзяь между всеми устройствами в таблице IP-адресации. В случае сбоя проверки связи может потребоваться отключить брандмауэр на хостах.   
+C:\>ping 192.168.10.1    
 
 Pinging 192.168.10.1 with 32 bytes of data:  
 
