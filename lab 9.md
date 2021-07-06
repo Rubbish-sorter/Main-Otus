@@ -263,7 +263,7 @@ Fa0/14 disabled 999 auto auto 10/100BaseTX
 Fa0/15 disabled 999 auto auto 10/100BaseTX  
 Fa0/16 disabled 999 auto auto 10/100BaseTX  
 Fa0/17 disabled 999 auto auto 10/100BaseTX  
-Fa0/18 disabled 999 auto auto 10/100BaseTX
+Fa0/18 disabled 999 auto auto 10/100BaseTX  
 Fa0/19 disabled 999 auto auto 10/100BaseTX    
 Fa0/20 disabled 999 auto auto 10/100BaseTX  
 Fa0/21 disabled 999 auto auto 10/100BaseTX  
