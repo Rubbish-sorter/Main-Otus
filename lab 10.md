@@ -188,11 +188,11 @@ R2(config-if)#
 
 %LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0/1, changed state to up  
 
-R2(config-if)#exit
-R2(config)#router ospf 56 area 0
-R2(config-router)#router 2.2.2.2
-R2(config-router)#network 192.168.1.0 0.0.0.255 area 0
-R2(config-router)#exit
+R2(config-if)#exit  
+R2(config)#router ospf 56 area 0  
+R2(config-router)#router 2.2.2.2  
+R2(config-router)#network 192.168.1.0 0.0.0.255 area 0  
+R2(config-router)#exit  
 
 
 Часть 3. Оптимизация и проверка конфигурации OSPFv2 для одной области
