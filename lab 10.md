@@ -45,21 +45,156 @@ f.	Зашифруйте открытые пароли.
 g.	Создайте баннер с предупреждением о запрете несанкционированного доступа к устройству.  
 h.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.  
 Закройте окно настройки.  
+**R1**  
+Router>en  
+Router#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Router(config)#hostname R1  
+R1(config)#no ip domain lookup  
+R1(config)#banner motd #Unauthorized acces is strictly prohibited!#  
+R1(config)#ser pass  
+R1(config)#enable secret class  
+R1(config)#line con 0  
+R1(config-line)#pass cisco    
+R1(config-line)#logg sync  
+R1(config-line)#login  
+R1(config-line)#line vty 0 4  
+R1(config-line)#pass cisco  
+R1(config-line)#login   
+R1(config-line)#exit  
+R1(config)#do copy run start  
+Destination filename [startup-config]?   
+Building configuration...  
+[OK]  
+**S1**  
+Switch>en     
+Switch#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Switch(config)#hostname S1  
+S1(config)#no ip domain lookup  
+S1(config)#banner motd #Unauthorized access is strictly prohibited!#  
+S1(config)#  
+S1(config)#enable secret class  
+S1(config)#line con 0 
+S1(config-line)#pass cisco  
+S1(config-line)#logg sync  
+S1(config-line)#login  
+S1(config-line)#line vty 0 4  
+S1(config-line)#pass cisco  
+S1(config-line)#login  
+S1(config-line)#exit  
+**S2**  
+Switch>en   
+Switch#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Switch(config)#hostname S2  
+S2(config)#no ip domain lookup  
+S2(config)#banner motd #Unauthorized access is strictly prohibited!#  
+S2(config)#enable secret class  
+S2(config)#line con 0  
+S2(config-line)#pass cisco  
+S2(config-line)#logg sync  
+S2(config-line)#login  
+S2(config-line)#line vty 0 4  
+S2(config-line)#pass cisco  
+S2(config-line)#login  
+S2(config-line)#exit  
+Router>en  
+Router#conf t  
+Enter configuration commands, one per line. End with CNTL/Z.  
+Router(config)#hostname R2  
+R2(config)#no ip domain lookup  
+R2(config)#banner motd #Unauthorized acces is strictly prohibited!#  
+R2(config)#ser pass  
+R2(config)#enable secret class  
+R2(config)#line con 0  
+R2(config-line)#pass cisco  
+R2(config-line)#logg sync  
+R2(config-line)#login
+R2(config-line)#line vty 0 4  
+R2(config-line)#pass cisco  
+R2(config-line)#login  
+R2(config-line)#exit  
+R2(config)#do copy run start  
+Destination filename [startup-config]?   
+Building configuration...  
+[OK]  
 
-Часть 2. Настройка и проверка базовой работы протокола OSPFv2 для одной области
-Шаг 1. Настройте адреса интерфейса и базового OSPFv2 на каждом маршрутизаторе.
-a.	Настройте адреса интерфейсов на каждом маршрутизаторе, как показано в таблице адресации выше.
-Откройте окно конфигурации
-b.	Перейдите в режим конфигурации маршрутизатора OSPF, используя идентификатор процесса 56.
-c.	Настройте статический идентификатор маршрутизатора для каждого маршрутизатора (1.1.1.1 для R1, 2.2.2.2 для R2).
-d.	Настройте инструкцию сети для сети между R1 и R2, поместив ее в область 0.
-e.	Только на R2 добавьте конфигурацию, необходимую для объявления сети Loopback 1 в область OSPF 0.
-f.	Убедитесь, что OSPFv2 работает между маршрутизаторами. Выполните команду, чтобы убедиться, что R1 и R2 сформировали смежность.
-Вопрос:
-Какой маршрутизатор является DR? Какой маршрутизатор является BDR? Каковы критерии отбора? R1 + ID
-g.	На R1 выполните команду show ip route ospf, чтобы убедиться, что сеть R2 Loopback1 присутствует в таблице маршрутизации. Обратите внимание, что поведение OSPF по умолчанию заключается в объявлении интерфейса обратной связи в качестве маршрута узла с использованием 32-битной маски.
-h.	Запустите Ping до  адреса интерфейса R2 Loopback 1 из R1. Выполнение команды ping должно быть успешным.
-Закройте окно настройки.
+Часть 2. Настройка и проверка базовой работы протокола OSPFv2 для одной области  
+Шаг 1. Настройте адреса интерфейса и базового OSPFv2 на каждом маршрутизаторе.  
+a.	Настройте адреса интерфейсов на каждом маршрутизаторе, как показано в таблице адресации выше.  
+Откройте окно конфигурации  
+b.	Перейдите в режим конфигурации маршрутизатора OSPF, используя идентификатор процесса 56.  
+c.	Настройте статический идентификатор маршрутизатора для каждого маршрутизатора (1.1.1.1 для R1, 2.2.2.2 для R2).  
+d.	Настройте инструкцию сети для сети между R1 и R2, поместив ее в область 0.   
+e.	Только на R2 добавьте конфигурацию, необходимую для объявления сети Loopback 1 в область OSPF 0.    
+f.	Убедитесь, что OSPFv2 работает между маршрутизаторами. Выполните команду, чтобы убедиться, что R1 и R2 сформировали смежность.    
+Вопрос:    
+Какой маршрутизатор является DR? Какой маршрутизатор является BDR? Каковы критерии отбора?  
+g.	На R1 выполните команду show ip route ospf, чтобы убедиться, что сеть R2 Loopback1 присутствует в таблице маршрутизации. Обратите внимание, что поведение OSPF по   умолчанию заключается в объявлении интерфейса обратной связи в качестве маршрута узла с использованием 32-битной маски.  
+h.	Запустите Ping до  адреса интерфейса R2 Loopback 1 из R1. Выполнение команды ping должно быть успешным.  
+Закройте окно настройки.   
+**R1**
+R1(config)#int loop 1  
+R1(config-if)#  
+%LINK-5-CHANGED: Interface Loopback1, changed state to up  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback1, changed state to up  
+
+R1(config-if)#ip addr 172.16.1.1 255.255.255.0  
+R1(config-if)#int g0/0/1  
+R1(config-if)#ip addr 10.53.0.1 255.255.255.0  
+R1(config-if)#no sh  
+
+R1(config-if)#  
+%LINK-5-CHANGED: Interface GigabitEthernet0/0/1, changed state to up  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0/1, changed state to up  
+R1(config-if)#exit   
+R1(config)#router ospf 56 
+R1(config-router)#router-id 1.1.1.1  
+R1(config-router)#network 10.53.0.0  0.0.0.255 area 0  
+R1(config-router)#exit  
+R1(config)#do clear ip ospf process
+Reset ALL OSPF processes? [no]: y
+R1(config)# 
+01:15:41: %OSPF-5-ADJCHG: Process 56, Nbr 2.2.2.2 on GigabitEthernet0/0/1 from LOADING to FULL, Loading Done  
+R1(config)#do sh ip route ospf  
+192.168.1.0/32 is subnetted, 1 subnets  
+O 192.168.1.1 [110/2] via 10.53.0.2, 00:04:20, GigabitEthernet0/0/1  
+R1(config)#do ping 192.168.1.1  
+
+Type escape sequence to abort.  
+Sending 5, 100-byte ICMP Echos to 192.168.1.1, timeout is 2 seconds:  
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+  **R2**
+R2(config)#int loop 1  
+
+R2(config-if)#  
+%LINK-5-CHANGED: Interface Loopback1, changed state to up  
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface Loopback1, changed state to up  
+
+R2(config-if)#ip addr 192.168.1.1   
+R2(config-if)#ip addr 192.168.1.1 255.255.255.0  
+R2(config-if)#int g0/0/1  
+R2(config-if)#ip addr 10.53.0.2 
+R2(config-if)#ip addr 10.53.0.2 255.255.255.0  
+R2(config-if)#no sh  
+R2(config-if)#  
+%LINK-5-CHANGED: Interface GigabitEthernet0/0/1, changed state to up
+
+%LINEPROTO-5-UPDOWN: Line protocol on Interface GigabitEthernet0/0/1, changed state to up  
+
+R2(config-if)#exit
+R2(config)#router ospf 56 area 0
+R2(config-router)#router 2.2.2.2
+R2(config-router)#network 192.168.1.0 0.0.0.255 area 0
+R2(config-router)#exit
+
+
 Часть 3. Оптимизация и проверка конфигурации OSPFv2 для одной области
 Шаг 1. Реализация различных оптимизаций на каждом маршрутизаторе.
 Откройте окно конфигурации
