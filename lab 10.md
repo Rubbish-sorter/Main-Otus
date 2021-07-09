@@ -257,8 +257,12 @@ GigabitEthernet0/0/1 is up, line protocol is up
 Type escape sequence to abort.  
 Sending 5, 100-byte ICMP Echos to 192.168.1.1, timeout is 2 seconds:  
 !!!!!  
-Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/2 ms  
-**R2**
-Вопрос:
-Почему стоимость OSPF для маршрута по умолчанию отличается от стоимости OSPF в R1 для сети 192.168.1.0/24?
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/2 ms
+**R2**   
+R1(config)#do sh ip route ospf
+O*E2 0.0.0.0/0 [110/1] via 10.53.0.1, 00:01:49, GigabitEthernet0/0/1
 
+**Вопрос:**
+Почему стоимость OSPF для маршрута по умолчанию отличается от стоимости OSPF в R1 для сети 192.168.1.0/24?  
+**Ответ:**  
+Стоимость прямо зависит от пропускной способности задействованных интрефейсов.  
