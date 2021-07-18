@@ -282,19 +282,19 @@ GigabitEthernet0/0/1 is up, line protocol is up
     Adjacent with neighbor 2.2.2.2  (Backup Designated Router)    
   Suppress hello for 0 neighbor(s) 
   
-R1#sh ip route ospf
-     192.168.1.0/32 is subnetted, 1 subnets
-O       192.168.1.1 [110/2] via 10.53.0.2, 00:01:02, GigabitEthernet0/0/1
+R1#sh ip route ospf  
+     192.168.1.0/32 is subnetted, 1 subnets    
+O       192.168.1.1 [110/2] via 10.53.0.2, 00:01:02, GigabitEthernet0/0/1  
   
   R1(config)#do ping 192.168.1.1    
 
 Type escape sequence to abort.  
 Sending 5, 100-byte ICMP Echos to 192.168.1.1, timeout is 2 seconds:  
 !!!!!  
-Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/2 ms
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/2 ms  
 **R2**   
 R2(config)#do sh ip route ospf  
-O*E2 0.0.0.0/0 [110/1] via 10.53.0.1, 00:01:49, GigabitEthernet0/0/1   
+O*E2 0.0.0.0/0 [110/1] via 10.53.0.1, 00:01:49, GigabitEthernet0/0/1     
  
 
 **Вопрос:**
