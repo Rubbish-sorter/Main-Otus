@@ -110,7 +110,7 @@ R2(config)#enable secret class
 R2(config)#line con 0  
 R2(config-line)#pass cisco  
 R2(config-line)#logg sync  
-R2(config-line)#login
+R2(config-line)#login  
 R2(config-line)#line vty 0 4  
 R2(config-line)#pass cisco  
 R2(config-line)#login  
@@ -213,7 +213,21 @@ R1(config-if)#ex
 R1(config)#ip route 0.0.0.0 0.0.0.0 loop 1  
 %Default route without gateway, if not a point-to-point interface, may impact performance  
 R1(config)#router ospf 56  
-R2(config-router)#def origin  
+R1(config-router)#def origin 
+R1(config-router)#auto-cost reference-bandwidth 1000    
+% OSPF: Reference bandwidth is changed.    
+        Please ensure reference bandwidth is consistent across all routers.
+R1(config-router)#do clear ip ospf proc
+Reset ALL OSPF processes? [no]: y
+
+R1(config-router)#  
+00:15:17: %OSPF-5-ADJCHG: Process 56, Nbr 2.2.2.2 on GigabitEthernet0/0/1 from FULL to DOWN, Neighbor Down: Adjacency forced to reset     
+
+00:15:17: %OSPF-5-ADJCHG: Process 56, Nbr 2.2.2.2 on GigabitEthernet0/0/1 from FULL to DOWN, Neighbor Down: Interface down or detached   
+
+R1(config-router)#  
+00:15:30: %OSPF-5-ADJCHG: Process 56, Nbr 2.2.2.2 on GigabitEthernet0/0/1 from LOADING to FULL, Loading Done    
+  
 R2(config-router)#exit 
 
 **R2**  
@@ -222,7 +236,21 @@ R2(config-if)#ip ospf hello 30
 R2(config-if)#ip ospf dead 120  
 R2(config-if)#ex  
 R2(config)#router ospf 56  
-R2(config-router)#passive lo 1  
+R2(config-router)#passive lo 1 
+R2(config-router)#auto-cost reference-bandwidth 1000  
+% OSPF: Reference bandwidth is changed.  
+        Please ensure reference bandwidth is consistent across all routers.
+R2(config-router)#do clear ip ospf proc
+Reset ALL OSPF processes? [no]: y
+
+R2(config-router)#
+00:15:28: %OSPF-5-ADJCHG: Process 56, Nbr 1.1.1.1 on GigabitEthernet0/0/1 from FULL to DOWN, Neighbor Down: Adjacency forced to reset
+
+00:15:28: %OSPF-5-ADJCHG: Process 56, Nbr 1.1.1.1 on GigabitEthernet0/0/1 from FULL to DOWN, Neighbor Down: Interface down or detached
+
+R2(config-router)#
+00:15:30: %OSPF-5-ADJCHG: Process 56, Nbr 1.1.1.1 on GigabitEthernet0/0/1 from LOADING to FULL, Loading Done
+
 R2(config-router)#ex  
 R2(config)#int lo 1  
 R2(config-if)#ip ospf network point-to-point  
@@ -238,31 +266,36 @@ R1(config)#do sh ip ospf int g0/0/1
 
 GigabitEthernet0/0/1 is up, line protocol is up  
   Internet address is 10.53.0.1/24, Area 0  
-  Process ID 56, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 1 
+  Process ID 56, Router ID 1.1.1.1, Network Type BROADCAST, Cost: 10  
   Transmit Delay is 1 sec, State DR, Priority 50  
   Designated Router (ID) 1.1.1.1, Interface address 10.53.0.1  
-  Backup Designated Router (ID) 2.2.2.2, Interface address 10.53.0.2   
-  Timer intervals configured, Hello 30, Dead 40, Wait 40, Retransmit 5   
-    Hello due in 00:00:26  
+  Backup Designated Router (ID) 2.2.2.2, Interface address 10.53.0.2  
+  Timer intervals configured, Hello 30, Dead 120, Wait 40, Retransmit 5   
+    Hello due in 00:00:09  
   Index 1/1, flood queue length 0  
   Next 0x0(0)/0x0(0)  
-  Last flood scan length is 1, maximum is 1  
-  Last flood scan time is 0 msec, maximum is 0 msec  
-  Neighbor Count is 1, Adjacent neighbor count is 1  
-    Adjacent with neighbor 2.2.2.2  (Backup Designated Router)  
-  Suppress hello for 0 neighbor(s)  
+  Last flood scan length is 1, maximum is 1    
+  Last flood scan time is 0 msec, maximum is 0 msec    
+  Neighbor Count is 1, Adjacent neighbor count is 1    
+    Adjacent with neighbor 2.2.2.2  (Backup Designated Router)    
+  Suppress hello for 0 neighbor(s) 
   
-  R1(config)#do ping 192.168.1.1  
+R1#sh ip route ospf
+     192.168.1.0/32 is subnetted, 1 subnets
+O       192.168.1.1 [110/2] via 10.53.0.2, 00:01:02, GigabitEthernet0/0/1
+  
+  R1(config)#do ping 192.168.1.1    
 
 Type escape sequence to abort.  
 Sending 5, 100-byte ICMP Echos to 192.168.1.1, timeout is 2 seconds:  
 !!!!!  
 Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/2 ms
 **R2**   
-R1(config)#do sh ip route ospf
-O*E2 0.0.0.0/0 [110/1] via 10.53.0.1, 00:01:49, GigabitEthernet0/0/1
+R2(config)#do sh ip route ospf  
+O*E2 0.0.0.0/0 [110/1] via 10.53.0.1, 00:01:49, GigabitEthernet0/0/1   
+ 
 
 **Вопрос:**
 Почему стоимость OSPF для маршрута по умолчанию отличается от стоимости OSPF в R1 для сети 192.168.1.0/24?  
 **Ответ:**  
-Стоимость прямо зависит от пропускной способности задействованных интрефейсов.  
+Стоимость прямо зависит от пропускной способности задействованных интрефейсов и от базовой пропускной способности маршрутизатора. Пропускная способность виртуального интерфейса равна базовой. 
