@@ -119,9 +119,8 @@ R2(config)#do copy run start
 Destination filename [startup-config]?   
 Building configuration...  
 [OK]  
-
-Часть 2. Настройка и проверка базовой работы протокола OSPFv2 для одной области  
-Шаг 1. Настройте адреса интерфейса и базового OSPFv2 на каждом маршрутизаторе.  
+### Часть 2. Настройка и проверка базовой работы протокола OSPFv2 для одной области  
+#### Шаг 1. Настройте адреса интерфейса и базового OSPFv2 на каждом маршрутизаторе.  
 a.	Настройте адреса интерфейсов на каждом маршрутизаторе, как показано в таблице адресации выше.  
 Откройте окно конфигурации  
 b.	Перейдите в режим конфигурации маршрутизатора OSPF, используя идентификатор процесса 56.  
@@ -129,8 +128,11 @@ c.	Настройте статический идентификатор марш
 d.	Настройте инструкцию сети для сети между R1 и R2, поместив ее в область 0.   
 e.	Только на R2 добавьте конфигурацию, необходимую для объявления сети Loopback 1 в область OSPF 0.    
 f.	Убедитесь, что OSPFv2 работает между маршрутизаторами. Выполните команду, чтобы убедиться, что R1 и R2 сформировали смежность.    
-Вопрос:    
-Какой маршрутизатор является DR? Какой маршрутизатор является BDR? Каковы критерии отбора?  
+**Вопрос:**   
+Какой маршрутизатор является DR? Какой маршрутизатор является BDR? Каковы критерии отбора? 
+**Ответ:**  
+DR - R2 из-за большего ID, BDR R1.  
+
 g.	На R1 выполните команду show ip route ospf, чтобы убедиться, что сеть R2 Loopback1 присутствует в таблице маршрутизации. Обратите внимание, что поведение OSPF по   умолчанию заключается в объявлении интерфейса обратной связи в качестве маршрута узла с использованием 32-битной маски.  
 h.	Запустите Ping до  адреса интерфейса R2 Loopback 1 из R1. Выполнение команды ping должно быть успешным.  
 Закройте окно настройки.   
@@ -155,8 +157,8 @@ R1(config)#router ospf 56
 R1(config-router)#router-id 1.1.1.1  
 R1(config-router)#network 10.53.0.0  0.0.0.255 area 0  
 R1(config-router)#exit  
-R1(config)#do clear ip ospf process
-Reset ALL OSPF processes? [no]: y
+R1(config)#do clear ip ospf process    
+Reset ALL OSPF processes? [no]: y  
 R1(config)# 
 01:15:41: %OSPF-5-ADJCHG: Process 56, Nbr 2.2.2.2 on GigabitEthernet0/0/1 from LOADING to FULL, Loading Done  
 R1(config)#do sh ip route ospf  
@@ -179,9 +181,9 @@ R2(config-if)#
 
 R2(config-if)#ip addr 192.168.1.1   
 R2(config-if)#ip addr 192.168.1.1 255.255.255.0  
-R2(config-if)#int g0/0/1  
-R2(config-if)#ip addr 10.53.0.2 
-R2(config-if)#ip addr 10.53.0.2 255.255.255.0  
+R2(config-if)#int g0/0/1    
+R2(config-if)#ip addr 10.53.0.2   
+R2(config-if)#ip addr 10.53.0.2 255.255.255.0    
 R2(config-if)#no sh  
 R2(config-if)#  
 %LINK-5-CHANGED: Interface GigabitEthernet0/0/1, changed state to up
@@ -195,8 +197,8 @@ R2(config-router)#network 192.168.1.0 0.0.0.255 area 0
 R2(config-router)#exit  
 
 
-Часть 3. Оптимизация и проверка конфигурации OSPFv2 для одной области
-Шаг 1. Реализация различных оптимизаций на каждом маршрутизаторе.
+### Часть 3. Оптимизация и проверка конфигурации OSPFv2 для одной области
+#### Шаг 1. Реализация различных оптимизаций на каждом маршрутизаторе.
 Откройте окно конфигурации
 a.	На R1 настройте приоритет OSPF интерфейса G0/0/1 на 50, чтобы убедиться, что R1 является назначенным маршрутизатором.  
 b.	Настройте таймеры OSPF на G0/0/1 каждого маршрутизатора для таймера приветствия, составляющего 30 секунд.  
@@ -210,7 +212,7 @@ R1(config-if)#ip ospf hello 30
 R1(config-if)#ip ospf priority 50   
 R1(config-if)#ip ospf dead 120    
 R1(config-if)#ex   
-R1(config)#ip route 0.0.0.0 0.0.0.0 loop 1  
+R1(config)#ip route 0.0.0.0 0.0.0.0 loop 1    
 %Default route without gateway, if not a point-to-point interface, may impact performance  
 R1(config)#router ospf 56  
 R1(config-router)#def origin 
