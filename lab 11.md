@@ -215,7 +215,7 @@ sh
 exit   
 do sh vlan br   
 
-Результат работы скрипта, пропуска команд нет.   
+Результат работы скрипта, пропуска команд нет, не брал сообщения о выключении портов.   
 S1(config)#do sh vlan br   
  
 VLAN Name                             Status    Ports   
@@ -236,72 +236,86 @@ VLAN Name                             Status    Ports
 1004 fddinet-default                  active      
 1005 trnet-default                    active      
 
-Скрипт для **S2** из привилегированного режима
+Скрипт для **S2** из привилегированного режима  
 
-conf t
-vlan 20 
-name Management
-vlan 30
-name Operations
-vlan 40
-name Sales
-vlan 999
-name Parking_lot
-vlan 1000 
-name Native
+conf t    
+vlan 20   
+name Management   
+vlan 30  
+name Operations  
+vlan 40  
+name Sales   
+vlan 999  
+name Parking_lot  
+vlan 1000    
+name Native  
+!  
+int vlan 20  
+ip addr 10.20.0.3 255.255.255.0     
+ip default 10.20.0.1    
+!   
+int f0/18    
+sw mode acc    
+sw acc vlan 40    
+!    
+int range  f0/2-4    
+sw mode acc  
+sw acc vlan 999  
+sh  
+!   
+int range f0/6-17   
+sw mode acc  
+sw acc vlan 999  
+sh  
 !
-int vlan 20
-ip addr 10.20.0.3 255.255.255.0
-ip default 10.20.0.1
-!
-int f0/18
-sw mode acc
-sw acc vlan 40
-!
-int range  f0/2-4
-sw mode acc
-sw acc vlan 999
-sh
-!
-int range f0/6-17
-sw mode acc
-sw acc vlan 999
-sh
-!
-int range f0/19-24
-sw mode acc
-sw acc vlan 999
-sh
-!
-int range g0/1-2
-sw mode acc
-sw acc vlan 999
-sh
-exit
-!
-do sh vlan br
+int range f0/19-24  
+sw mode acc  
+sw acc vlan 999   
+sh    
+!   
+int range g0/1-2  
+sw mode acc   
+sw acc vlan 999  
+sh   
+exit  
+!  
+do sh vlan br  
 
-Результат выполнения скрипта, сообщения о выключении портов не брал.   
+Результат выполнения скрипта, сообщения о выключении портов не брал.     
 
-S2(config-if)#do sh vlan br  
+S2(config-if)#do sh vlan br    
 
-VLAN Name                             Status    Ports  
----- -------------------------------- --------- -------------------------------  
-1    default                          active    Fa0/1, Fa0/5  
-20   Management                       active      
-30   Operations                       active      
-40   Sales                            active    Fa0/18  
-999  Parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/6  
-                                                Fa0/7, Fa0/8, Fa0/9, Fa0/10  
-                                                Fa0/11, Fa0/12, Fa0/13, Fa0/14  
-                                                Fa0/15, Fa0/16, Fa0/17, Fa0/19  
-                                                Fa0/20, Fa0/21, Fa0/22, Fa0/23  
-                                                Fa0/24, Gig0/1, Gig0/2  
-1000 Native                           active      
-1002 fddi-default                     active      
-1003 token-ring-default               active      
-1004 fddinet-default                  active      
-1005 trnet-default                    active       
+VLAN Name                             Status    Ports    
+---- -------------------------------- --------- -------------------------------    
+1    default                          active    Fa0/1, Fa0/5      
+20   Management                       active        
+30   Operations                       active         
+40   Sales                            active    Fa0/18     
+999  Parking_lot                      active    Fa0/2, Fa0/3, Fa0/4, Fa0/6     
+                                                Fa0/7, Fa0/8, Fa0/9, Fa0/10    
+                                                Fa0/11, Fa0/12, Fa0/13, Fa0/14    
+                                                Fa0/15, Fa0/16, Fa0/17, Fa0/19    
+                                                Fa0/20, Fa0/21, Fa0/22, Fa0/23    
+                                                Fa0/24, Gig0/1, Gig0/2     
+1000 Native                           active        
+1002 fddi-default                     active        
+1003 token-ring-default               active        
+1004 fddinet-default                  active        
+1005 trnet-default                    active         
+
+### Настройте транки (магистральные каналы).   
+#### Шаг 1. Вручную настройте магистральный интерфейс F0/1.  
+Откройте окно конфигурации  
+a.	Измените режим порта коммутатора на интерфейсе F0/1, чтобы принудительно создать магистральную связь. Не забудьте сделать это на обоих коммутаторах.  
+b.	В рамках конфигурации транка установите для native vlan значение 1000 на обоих коммутаторах. При настройке двух интерфейсов для разных собственных VLAN   сообщения об ошибках могут отображаться временно.  
+c.	В качестве другой части конфигурации транка укажите, что VLAN 10, 20, 30 и 1000 разрешены в транке.   
+d.	Выполните команду show interfaces trunk для проверки портов магистрали, собственной VLAN и разрешенных VLAN через магистраль.    
+#### Шаг 2. Вручную настройте магистральный интерфейс F0/5 на коммутаторе S1.  
+a.	Настройте интерфейс S1 F0/5 с теми же параметрами транка, что и F0/1. Это транк до маршрутизатора.  
+b.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.   
+c.	Используйте команду show interfaces trunk для проверки настроек транка.   
+
+
 
 
 
