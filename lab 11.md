@@ -475,12 +475,13 @@ S1(config-line)#tr input ssh
 S1(config-line)#login local  
 S1(config-line)#exit  
 
-Шаг 2. Включите защищенные веб-службы с проверкой подлинности на R1.  
-a.	Включите сервер HTTPS на R1.  
-R1(config)# ip http secure-server   
+Шаг 2. Включите защищенные веб-службы с проверкой подлинности на R1.    
+a.	Включите сервер HTTPS на R1.    
+R1(config)# ip http secure-server     
 b.	Настройте R1 для проверки подлинности пользователей, пытающихся подключиться к веб-серверу.  
-R1(config)# ip http authentication local  
-Не работает. Нет в PT, но проверено на стороне. 
+R1(config)# ip http authentication local    
+Не работает. Нет в PT, но проверено на стороне.   
+
 ---------------------------------- 
 ### Проверка подключения  
 Шаг 1. Настройте узлы ПК.  
