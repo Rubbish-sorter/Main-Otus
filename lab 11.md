@@ -499,77 +499,77 @@ PC-B	HTTPS	172.16.1.1
 PC-B	SSH	10.20.0.1  
 PC-B	SSH	172.16.1.1  
 
-**PC-A**
-Pinging 10.20.0.1 with 32 bytes of data:
+**PC-A**  
+Pinging 10.20.0.1 with 32 bytes of data:   
 
-Reply from 10.20.0.1: bytes=32 time=1ms TTL=255
-Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.20.0.1: bytes=32 time=1ms TTL=255   
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255  
+  
+Ping statistics for 10.20.0.1:  
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 1ms, Average = 0ms  
 
-Ping statistics for 10.20.0.1:
-Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-Minimum = 0ms, Maximum = 1ms, Average = 0ms
+C:\>ping 10.40.0.1  
 
-C:\>ping 10.40.0.1
+Pinging 10.40.0.1 with 32 bytes of data:  
 
-Pinging 10.40.0.1 with 32 bytes of data:
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255   
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255  
 
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+Ping statistics for 10.40.0.1:  
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
+Approximate round trip times in milli-seconds:   
+Minimum = 0ms, Maximum = 0ms, Average = 0ms  
+ 
+**PC-B**  
+Pinging 10.20.0.1 with 32 bytes of data:  
 
-Ping statistics for 10.40.0.1:
-Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-Minimum = 0ms, Maximum = 0ms, Average = 0ms
+Reply from 10.20.0.1: bytes=32 time=1ms TTL=255  
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255  
 
-**PC-B**
-Pinging 10.20.0.1 with 32 bytes of data:
+Ping statistics for 10.20.0.1:  
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 1ms, Average = 0ms  
 
-Reply from 10.20.0.1: bytes=32 time=1ms TTL=255
-Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+C:\>ping 10.40.0.1  
 
-Ping statistics for 10.20.0.1:
-Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-Minimum = 0ms, Maximum = 1ms, Average = 0ms
+Pinging 10.40.0.1 with 32 bytes of data:  
 
-C:\>ping 10.40.0.1
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255  
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255  
 
-Pinging 10.40.0.1 with 32 bytes of data:
+Ping statistics for 10.40.0.1:  
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),  
+Approximate round trip times in milli-seconds:  
+Minimum = 0ms, Maximum = 0ms, Average = 0ms  
 
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
-Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+SSH 172.16.1.1  
+Password: $cisco123!  
 
-Ping statistics for 10.40.0.1:
-Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
-Approximate round trip times in milli-seconds:
-Minimum = 0ms, Maximum = 0ms, Average = 0ms
+Unauthorized access is strictly prohibited!  
 
-SSH 172.16.1.1
-Password: $cisco123!
+R1>  
 
-Unauthorized access is strictly prohibited!
+SSH 10.20.0.1  
+Password: $cisco123!  
 
-R1>
+Unauthorized access is strictly prohibited!  
 
-SSH 10.20.0.1
-Password: $cisco123!
-
-Unauthorized access is strictly prohibited!
-
-R1>
-
+R1>  
+ 
 ### Настройка и проверка списков контроля доступа (ACL)  
-При проверке базового подключения компания требует реализации следующих политик безопасности:  
-Политика1. Сеть Sales не может использовать SSH в сети Management (но в  другие сети SSH разрешен).   
+При проверке базового подключения компания требует реализации следующих политик безопасности:   
+Политика1. Сеть Sales не может использовать SSH в сети Management (но в  другие сети SSH разрешен).    
 
 Политика 2. Сеть Sales не имеет доступа к IP-адресам в сети Management с помощью любого веб-протокола (HTTP/HTTPS). Сеть Sales также не имеет доступа к интерфейсам R1 с помощью любого веб-протокола. Разрешён весь другой веб-трафик (обратите внимание — Сеть Sales  может получить доступ к интерфейсу Loopback 1 на R1).
 
@@ -595,6 +595,7 @@ PC-B	HTTPS	10.20.0.1	Сбой
 PC-B	HTTPS	172.16.1.1	Успех  
 PC-B	SSH	10.20.0.4	Сбой  
 PC-B	SSH	172.16.1.1	Успех  
+
 
 
 
