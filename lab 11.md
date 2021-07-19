@@ -315,8 +315,117 @@ a.	Настройте интерфейс S1 F0/5 с теми же парамет
 b.	Сохраните текущую конфигурацию в файл загрузочной конфигурации.   
 c.	Используйте команду show interfaces trunk для проверки настроек транка.   
 
+Скрипт для **S1** из привилегированного режима.
+conf t
+int f0/1
+sw mode tr
+sw tr native vlan 1000
+sw tr allow vlan 10,20,30,1000
+exit
+!
+int f0/5
+sw mode tr
+sw tr native vlan 1000
+sw tr allow vlan 10,20,30,1000
+exit
+!
+do sh int trunk
 
+Результат работы скрипта.  
+S1(config)#do sh int trunk  
+Port        Mode         Encapsulation  Status        Native vlan  
+Fa0/1       on           802.1q         trunking      1000  
+Fa0/5       on           802.1q         trunking      1000  
 
+Port        Vlans allowed on trunk  
+Fa0/1       20,30,40,1000  
+Fa0/5       20,30,40,1000  
+
+Port        Vlans allowed and active in management domain  
+Fa0/1       20,30,40,1000  
+Fa0/5       20,30,40,1000   
+
+Port        Vlans in spanning tree forwarding state and not pruned  
+Fa0/1       none    
+Fa0/5       none    
+
+S1(config)#     
+%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on FastEthernet0/1 (1000), with S2 FastEthernet0/1 (1).    
+
+Скрипт для **S2** из привилегированного режима.
+conf t
+int f0/1
+sw mode tr
+sw tr native vlan 1000
+sw tr allow vlan 10,20,30,1000
+exit
+!
+do sh int trunk
+
+Результат работы скрипта.
+S2(config)#do sh int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Fa0/1       on           802.1q         trunking      1000
+
+Port        Vlans allowed on trunk
+Fa0/1       10,20,30,1000
+
+Port        Vlans allowed and active in management domain
+Fa0/1       20,30,1000
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Fa0/1       none
+
+### Настройте маршрутизацию.   
+#### Шаг 1. Настройка маршрутизации между сетями VLAN на R1.  
+Откройте окно конфигурации   
+a.	Активируйте интерфейс G0/0/1 на маршрутизаторе.  
+b.	Настройте подинтерфейсы для каждой VLAN, как указано в таблице IP-адресации. Все подинтерфейсы используют инкапсуляцию 802.1Q. Убедитесь, что подинтерфейс для собственной VLAN не имеет назначенного IP-адреса. Включите описание для каждого подинтерфейса.   
+c.	Настройте интерфейс Loopback 1 на R1 с адресацией из приведенной выше таблицы.  
+d.	С помощью команды show ip interface brief проверьте конфигурацию подынтерфейса.  
+Шаг 2. Настройка интерфейса R2 g0/0/1 с использованием адреса из таблицы и маршрута по умолчанию с адресом следующего перехода 10.20.0.1  
+
+Скрипт для **R1**  
+
+conf t  
+int g0/0/1  
+no ip addr  
+no sh  
+!  
+int g0/0/1.20   
+enc dot1q 20  
+ip addr 10.20.0.1 255.255.255.0  
+!  
+int g0/0/1.30  
+enc dot1q 30  
+ip addr 10.30.0.1 255.255.255.0  
+!  
+int g0/0/1.40  
+enc dot1q 40  
+ip addr 10.40.0.1 255.255.255.0  
+!  
+int g0/0/1.1000  
+enc dot1q 1000 native  
+!  
+int lo 1   
+no sh  
+ip addr 172.16.1.1 255.255.255.0  
+exit   
+!  
+do sh ip int br  
+
+Результат работы скрипта 
+ 
+R1(config)#do sh ip int br  
+Interface IP-Address OK? Method Status Protocol   
+GigabitEthernet0/0/0 unassigned YES unset administratively down down   
+GigabitEthernet0/0/1 unassigned YES unset up up   
+GigabitEthernet0/0/1.2010.20.0.1 YES manual up up   
+GigabitEthernet0/0/1.3010.30.0.1 YES manual up up   
+GigabitEthernet0/0/1.4010.40.0.1 YES manual up up   
+GigabitEthernet0/0/1.1000unassigned YES unset up up     
+Loopback1 172.16.1.1 YES manual up up     
+Vlan1 unassigned YES unset administratively down down  
 
 
 
