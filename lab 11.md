@@ -352,17 +352,17 @@ Fa0/5       none
 S1(config)#     
 %CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on FastEthernet0/1 (1000), with S2 FastEthernet0/1 (1).    
 
-Скрипт для **S2** из привилегированного режима.
-conf t
-int f0/1
-sw mode tr
-sw tr native vlan 1000
-sw tr allow vlan 10,20,30,1000
-exit
-!
-do sh int trunk
+Скрипт для **S2** из привилегированного режима.  
+conf t  
+int f0/1  
+sw mode tr  
+sw tr native vlan 1000   
+sw tr allow vlan 10,20,30,1000  
+exit  
+!  
+do sh int trunk  
 
-Результат работы скрипта.
+Результат работы скрипта.  
 S2(config)#do sh int trunk
 Port        Mode         Encapsulation  Status        Native vlan
 Fa0/1       on           802.1q         trunking      1000
@@ -426,6 +426,179 @@ GigabitEthernet0/0/1.4010.40.0.1 YES manual up up
 GigabitEthernet0/0/1.1000unassigned YES unset up up     
 Loopback1 172.16.1.1 YES manual up up     
 Vlan1 unassigned YES unset administratively down down  
+
+**R2**
+R2(config)#conf t  
+R2(config)#ip route 0.0.0.0 0.0.0.0 10.20.0.1  
+R2(config)#int g0/0/1  
+R2(config-if)#ip addr 10.20.0.4 255.255.255.0  
+R2(config-if)#exit  
+
+### Настройте удаленный доступ
+Шаг 1. Настройте все сетевые устройства для базовой поддержки SSH.   
+Откройте окно конфигурации  
+a.	Создайте локального пользователя с именем пользователя SSHadmin и зашифрованным паролем $cisco123!  
+b.	Используйте ccna-lab.com в качестве доменного имени.    
+c.	Генерируйте криптоключи с помощью 1024 битного модуля.    
+d.	Настройте первые пять линий VTY на каждом устройстве, чтобы поддерживать только SSH-соединения и с локальной аутентификацией.    
+Универсальный скрипт  
+conf t  
+username SSHadmin secret $cisco123!  
+ip domain name ccna-lab.com  
+crypto key gen rsa   
+1024   
+ip ssh ver 2
+line vty 0 5
+tr input ssh
+login local
+exit
+
+Результат работы скрипта на **S1**
+
+S1#conf t  
+Enter configuration commands, one per line.  End with CNTL/Z.
+S1(config)#username SSHadmin secret $cisco123!  
+S1(config)#ip domain name ccna-lab.com  
+S1(config)#crypto key gen rsa   
+The name for the keys will be: S1.ccna-lab.com  
+Choose the size of the key modulus in the range of 360 to 2048 for your  
+  General Purpose Keys. Choosing a key modulus greater than 512 may take  
+  a few minutes.  
+
+How many bits in the modulus [512]: 1024   
+% Generating 1024 bit RSA keys, keys will be non-exportable...[OK]  
+
+S1(config)#ip ssh ver 2  
+Mar 1 1:13:49.752: %SSH-5-ENABLED: SSH 1.99 has been enabled  
+S1(config)#line vty 0 5  
+S1(config-line)#tr input ssh  
+S1(config-line)#login local  
+S1(config-line)#exit  
+
+Шаг 2. Включите защищенные веб-службы с проверкой подлинности на R1.  
+a.	Включите сервер HTTPS на R1.  
+R1(config)# ip http secure-server   
+b.	Настройте R1 для проверки подлинности пользователей, пытающихся подключиться к веб-серверу.  
+R1(config)# ip http authentication local  
+Не работает. Нет в PT, но проверено на стороне. 
+---------------------------------- 
+### Проверка подключения  
+Шаг 1. Настройте узлы ПК.  
+Адреса ПК можно посмотреть в таблице адресации.  
+Шаг 2. Выполните следующие тесты. Эхо запрос должен пройти успешно.  
+Примечание. Возможно, вам придется отключить брандмауэр ПК для работы ping  
+От	Протокол	Назначение  
+PC-A	Ping	10.40.0.10  
+PC-A	Ping	10.20.0.1  
+PC-B	Ping	10.30.0.10  
+PC-B	Ping	10.20.0.1  
+PC-B	Ping	172.16.1.1  
+PC-B	HTTPS	10.20.0.1  
+PC-B	HTTPS	172.16.1.1  
+PC-B	SSH	10.20.0.1  
+PC-B	SSH	172.16.1.1  
+
+**PC-A**
+Pinging 10.20.0.1 with 32 bytes of data:
+
+Reply from 10.20.0.1: bytes=32 time=1ms TTL=255
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+
+Ping statistics for 10.20.0.1:
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+Minimum = 0ms, Maximum = 1ms, Average = 0ms
+
+C:\>ping 10.40.0.1
+
+Pinging 10.40.0.1 with 32 bytes of data:
+
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+
+Ping statistics for 10.40.0.1:
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+**PC-B**
+Pinging 10.20.0.1 with 32 bytes of data:
+
+Reply from 10.20.0.1: bytes=32 time=1ms TTL=255
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.20.0.1: bytes=32 time<1ms TTL=255
+
+Ping statistics for 10.20.0.1:
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+Minimum = 0ms, Maximum = 1ms, Average = 0ms
+
+C:\>ping 10.40.0.1
+
+Pinging 10.40.0.1 with 32 bytes of data:
+
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+Reply from 10.40.0.1: bytes=32 time<1ms TTL=255
+
+Ping statistics for 10.40.0.1:
+Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+SSH 172.16.1.1
+Password: $cisco123!
+
+Unauthorized access is strictly prohibited!
+
+R1>
+
+SSH 10.20.0.1
+Password: $cisco123!
+
+Unauthorized access is strictly prohibited!
+
+R1>
+
+### Настройка и проверка списков контроля доступа (ACL)  
+При проверке базового подключения компания требует реализации следующих политик безопасности:  
+Политика1. Сеть Sales не может использовать SSH в сети Management (но в  другие сети SSH разрешен).   
+
+Политика 2. Сеть Sales не имеет доступа к IP-адресам в сети Management с помощью любого веб-протокола (HTTP/HTTPS). Сеть Sales также не имеет доступа к интерфейсам R1 с помощью любого веб-протокола. Разрешён весь другой веб-трафик (обратите внимание — Сеть Sales  может получить доступ к интерфейсу Loopback 1 на R1).
+
+Политика3. Сеть Sales не может отправлять эхо-запросы ICMP в сети Operations или Management. Разрешены эхо-запросы ICMP к другим адресатам.   
+
+Политика 4: Cеть Operations  не может отправлять ICMP эхозапросы в сеть Sales. Разрешены эхо-запросы ICMP к другим адресатам. 
+
+Шаг 1. Проанализируйте требования к сети и политике безопасности для планирования реализации ACL.    
+Loopback 1 здесь заменяет WAN, допущение в том, что в этой сети могут использоваться любые протоколы. В реальной сети стоит оставить вовне только Web и используемые протоколы. Остальное запретить. Внутри сети опять же только используемые протоколы в нужных направлениях. Межсетевой экран лучше подходит для этих задач особенно на границе периметра сети.  
+Шаг 2. Разработка и применение расширенных списков доступа, которые будут соответствовать требованиям политики безопасности.  
+Откройте окно конфигурации.    
+ 
+Закройте окно настройки.  
+Шаг 3. Убедитесь, что политики безопасности применяются развернутыми списками доступа.  
+Выполните следующие тесты. Ожидаемые результаты показаны в таблице:  
+От	Протокол	Назначение	Результат  
+PC-A	Ping	10.40.0.10	Сбой  
+PC-A	Ping	10.20.0.1	Успех  
+PC-B	Ping	10.30.0.10	Сбой  
+PC-B	Ping	10.20.0.1	Сбой  
+PC-B	Ping	172.16.1.1	Успех  
+PC-B	HTTPS	10.20.0.1	Сбой  
+PC-B	HTTPS	172.16.1.1	Успех  
+PC-B	SSH	10.20.0.4	Сбой  
+PC-B	SSH	172.16.1.1	Успех  
+
+
+
+
+
 
 
 
