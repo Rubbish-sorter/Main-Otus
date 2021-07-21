@@ -319,24 +319,24 @@ c.	Используйте команду show interfaces trunk для прове
 
 Скрипт для **S1** из привилегированного режима.
 
-conf t
-int f0/1
-sw mode tr
-sw tr native vlan 1000
-sw tr allow vlan 10,20,30,1000
-exit
-!
-int f0/5
-sw mode tr
-sw tr native vlan 1000
-sw tr allow vlan 10,20,30,1000
-exit
-!
-do sh int trunk
+conf t  
+int f0/1   
+sw mode tr  
+sw tr native vlan 1000  
+sw tr allow vlan 10,20,30,1000  
+exit  
+!  
+int f0/5  
+sw mode tr 
+sw tr native vlan 1000   
+sw tr allow vlan 10,20,30,1000    
+exit    
+!    
+do sh int trunk   
 
 Результат работы скрипта.  
 S1(config)#do sh int trunk  
-Port        Mode         Encapsulation  Status        Native vlan  
+Port        Mode         Encapsulation  Status        Native vlan    
 Fa0/1       on           802.1q         trunking      1000  
 Fa0/5       on           802.1q         trunking      1000  
 
